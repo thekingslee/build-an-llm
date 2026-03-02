@@ -3,11 +3,12 @@ import pytesseract
 from PIL import Image
 import pdfplumber
 import os
-import sys 
+import sys
+from pathlib import Path
 
  
-def pdf_extract(file_path):
-    with pdfplumber.open(file_path) as files:
+def pdf_extract(file):
+    with pdfplumber.open(file) as files:
         string = ''
         for page in files.pages: #for each page in the read pdf file
             pages_text = page.extract_text() or '' #extract texts from each page
@@ -17,14 +18,11 @@ def pdf_extract(file_path):
             string += '\n' #adding space before new page
     return string.strip()
 
- 
-#pdf_extract('/home/abdullahimujaheed/Downloads/Build a Large Language Mode_ (z-library.sk, 1lib.sk, z-lib.sk).pdf')
-
 
  
-def extract_text_with_ocr(file_path):
+def extract_text_with_ocr(file):
     string = ""
-    doc = pymupdf.open(file_path)
+    doc = pymupdf.open(file)
     for page in doc:
         pix = page.get_pixmap()  # Render page to an image
         img = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
@@ -43,20 +41,20 @@ def save_text_to_file(string, filename):
         f.write(string)
 
  
-def main(file_path):  
+def main(file):  
     # First try to extract text using pdfplumber
-    text = pdf_extract(file_path)
+    text = pdf_extract(file)
     
     # If no text is found, use OCR
     if not text.strip():
         print("No text found, performing OCR...")
-        text = extract_text_with_ocr(file_path)
+        text = extract_text_with_ocr(file)
 
-    print("Extracted Text:")
-    print(text)
+#    print("Extracted Text:")
+#    print(text)
 
     # Extract the filename from the URL
-    filename = os.path.basename(file_path).replace('.pdf', '.txt')  # Change extension to .txt
+    filename = os.path.basename(file).replace('.pdf', '.txt')  # Change extension to .txt
 
     save_text_to_file(text, filename)
 
@@ -64,8 +62,11 @@ def main(file_path):
  
 if __name__ == "__main__":
     if len(sys.argv) != 2:
-        print("Usage: python3 scrape_local_pdf.py <path_to_pdf_file>")
+        print("Usage: python3 scrape_local_pdf.py <path_to_pdf_file, including '/' at the end if it's a directory>")
         sys.exit(1)
-
-    file_path = sys.argv[1]  # Get the file path from command line arguments
-    main(file_path)
+    # Specify the directory you want to iterate over
+    file_path = sys.argv[1] 
+    directory_path = Path(file_path)  # Get the parent directory of the file path
+    for file in directory_path.iterdir():
+        if file.is_file() and file.suffix == '.pdf':  # Check if it's a PDF file (not a directory)
+            main(file) # Get the file path from command line arguments
