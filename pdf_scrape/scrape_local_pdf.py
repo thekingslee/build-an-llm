@@ -63,5 +63,9 @@ def main(file_path):
 
  
 if __name__ == "__main__":
-    file_path= sys.argv[1]  # Get the URL from command line arguments
+    if len(sys.argv) != 2:
+        print("Usage: python3 scrape_local_pdf.py <path_to_pdf_file>")
+        sys.exit(1)
+
+    file_path = sys.argv[1]  # Get the file path from command line arguments
     main(file_path)
