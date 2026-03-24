@@ -103,7 +103,7 @@ def train():
         model.train()
         total_loss = 0 # Training loss
 
-        for batch_idx, (x, y) in enumerate(tqdm.tqdm(train_loader, desc=f"Epoch {epoch}")):
+        for batch_idx, (x, y) in enumerate(tqdm.tqdm(train_loader, desc=f"Epoch {epoch + 1}")):
             x, y = x.to(device), y.to(device)
 
             optimizer.zero_grad()
