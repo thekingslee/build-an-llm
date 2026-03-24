@@ -1,2 +1,31 @@
 scraped_pages/
 
+# Python bytecode cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+.venv/
+venv/
+env/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Project specific
+checkpoints/
+*.log
+wandb/
+
+# Data files (optional - depends if you want to track your dataset)
+data/
+*.txt
+
