@@ -18,22 +18,39 @@ class GPTDataset(Dataset):
         y = self.data[idx+1:idx+self.seq_len+1]
         return x, y
 
-def load_local_corpus_data(file_path="data/nigerian_books.txt"):
+def load_local_corpus_data(data_dir):
     """
-    Load Nigerian book corpus from local text file
+    Load all .txt files from the data directory
+    Returns combined lines from all text files found
     """
+    import os
+    import glob
+    
     try:
-        with open(file_path, "r", encoding="utf-8") as f:
-            lines = f.readlines()
+        # Get all .txt files in the data directory
+        txt_files = glob.glob(os.path.join(data_dir, "*.txt"))
         
-        # Clean and filter lines
-        lines = [line.strip() for line in lines if line.strip()]
-        return lines
-    except FileNotFoundError:
-        print(f"⚠️  Local corpus file not found: {file_path}")
-        return []
+        if not txt_files:
+            return []
+        
+        all_lines = []
+        for txt_file in txt_files:
+            try:
+                with open(txt_file, "r", encoding="utf-8") as f:
+                    lines = f.readlines()
+                
+                # Clean and filter lines
+                clean_lines = [line.strip() for line in lines if line.strip()]
+                all_lines.extend(clean_lines)
+                                
+            except Exception as e:
+                print(f"  ⚠️  Error loading {txt_file}: {e}")
+                continue
+        
+        return all_lines
+        
     except Exception as e:
-        print(f"⚠️  Error loading local corpus: {e}")
+        print(f"⚠️  Error accessing directory {data_dir}: {e}")
         return []
 
 def load_huggingface_corpus_data(source):
@@ -62,7 +79,7 @@ def load_tokens(tokenizer, train_split=0.9):
     all_texts = []
     
     # Load local Nigerian corpus
-    local_texts = load_local_corpus_data("data/nigerian_books.txt")
+    local_texts = load_local_corpus_data("data/")
     if local_texts:
         all_texts.extend(local_texts)
         print(f"✅ Added {len(local_texts)} texts from local corpus")
