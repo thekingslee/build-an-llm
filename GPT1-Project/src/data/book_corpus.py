@@ -66,7 +66,7 @@ def load_huggingface_corpus_data(source):
         print(f"⚠️  Error loading HuggingFace corpus: {e}")
         return []
 
-def load_tokens(tokenizer, train_split=0.9):
+def load_tokens(tokenizer, train_split=0.8, val_split=0.1):
     """
     Load andd combine multiple data sources, then tokenize
     
@@ -75,7 +75,7 @@ def load_tokens(tokenizer, train_split=0.9):
         train_split: Fraction of data to use for training (default 0.9)
     
     Returns:
-        train_tokens, test_tokens: Tokenized and split data
+        train_tokens, val_tokens, test_tokens: Tokenized and split data
     """ 
     all_texts = []
     
@@ -96,12 +96,14 @@ def load_tokens(tokenizer, train_split=0.9):
     
     # print(f"Total texts loaded: {len(all_texts)}")
     
-    # Split combined data into train/test
-    split_idx = int(train_split * len(all_texts))
-    train_texts = all_texts[:split_idx]
-    test_texts = all_texts[split_idx:]
+    # Split combined data into train/val/test
+    train_end = int(train_split * len(all_texts))
+    val_end = train_end + int(val_split * len(all_texts))
+    train_texts = all_texts[:train_end]
+    val_texts = all_texts[train_end:val_end]
+    test_texts = all_texts[val_end:]
     
-    print(f"Data split: {len(train_texts)} train, {len(test_texts)} test")
+    print(f"Data split: {len(train_texts)} train, {len(val_texts)} val, {len(test_texts)} test")
     
     # Tokenize train data
     train_tokens = []
@@ -109,6 +111,12 @@ def load_tokens(tokenizer, train_split=0.9):
         if text.strip():  # Skip empty texts
             train_tokens.extend(tokenizer.encode(text))
     
+    # Tokenize validation data
+    val_tokens = []
+    for text in val_texts:
+        if text.strip():  # Skip empty texts
+            val_tokens.extend(tokenizer.encode(text))
+
     # Tokenize test data
     test_tokens = []
     for text in test_texts:
@@ -116,10 +124,7 @@ def load_tokens(tokenizer, train_split=0.9):
             test_tokens.extend(tokenizer.encode(text))
     
     print(f"✅ Tokenization complete!")
-    print(f"   Train tokens: {len(train_tokens):,}")
-    print(f"   Test tokens: {len(test_tokens):,}")
-    
-    return train_tokens, test_tokens
+    return train_tokens, val_tokens, test_tokens
 
 def prepare_dataloader(tokens, config):
     """
@@ -128,9 +133,6 @@ def prepare_dataloader(tokens, config):
     # Validate we have enough tokens
     if len(tokens) < config.SEQ_LEN:
         print(f"⚠️  Warning: Only {len(tokens)} tokens available, but SEQ_LEN={config.SEQ_LEN}")
-        print(f"   Dataset will be empty. Consider:")
-        print(f"   1. Adding more training data")
-        print(f"   2. Reducing SEQ_LEN in config")
         
         # For testing purposes, use a smaller sequence length
         effective_seq_len = min(config.SEQ_LEN, max(1, len(tokens) // 2))

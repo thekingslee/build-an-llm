@@ -3,11 +3,13 @@ from dataclasses import dataclass
 @dataclass
 class Config:
     # ---------------- Data & Training ----------------
-    BATCH_SIZE: int = 32  # GPT-1 original: 64 minibatch size
+    BATCH_SIZE: int = 64  # GPT-1 original: 64 minibatch size
     SEQ_LEN: int = 512  # Context length for training sequences: 512 tokens
     EPOCHS: int = 100  # GPT-1 original: 100 epochs
     LEARNING_RATE: float = 3e-4  # GPT-1 original: 2.5e-4 max learning rate
     TARGET_LOSS: float = 1.5
+    EARLY_STOPPING_PATIENCE: int = 3
+    EARLY_STOPPING_MIN_DELTA: float = 1e-4
 
     # ------------- Model Architecture -------------
     EMBED_SIZE: int = 768
