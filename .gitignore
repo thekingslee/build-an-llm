@@ -26,6 +26,6 @@ checkpoints/
 wandb/
 
 # Data files (optional - depends if you want to track your dataset)
-data/
+/GPT1-Project/data/
 *.txt
 

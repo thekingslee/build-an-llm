@@ -9,7 +9,7 @@ import os
 
 # Project modules
 from src.models.gpt1 import GPT1
-from src.data.nigerian_corpus import load_tokens, prepare_dataloader
+from src.data.book_corpus import load_tokens, prepare_dataloader
 from src.utils.config import CONFIG
 
 def train():
@@ -21,7 +21,7 @@ def train():
     tokenizer = GPT2Tokenizer.from_pretrained("gpt2")
 
     # ------------------- Load Dataset -------------------
-    train_tokens, test_tokens = load_tokens("data/nigerian_books.txt", tokenizer)
+    train_tokens, test_tokens = load_tokens(tokenizer)
     train_loader = prepare_dataloader(train_tokens, CONFIG)
     test_loader = prepare_dataloader(test_tokens, CONFIG)
 
