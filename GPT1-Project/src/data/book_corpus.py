@@ -11,7 +11,8 @@ class GPTDataset(Dataset):
         self.seq_len = seq_len
 
     def __len__(self):
-        return len(self.data) - self.seq_len
+        # Ensure we return at least 0, even if we don't have enough tokens
+        return max(0, len(self.data) - self.seq_len)
 
     def __getitem__(self, idx):
         x = self.data[idx:idx+self.seq_len]
@@ -85,15 +86,15 @@ def load_tokens(tokenizer, train_split=0.9):
         print(f"✅ Added {len(local_texts)} texts from local corpus")
     
     # Load HuggingFace BookCorpus
-    bookcorpus_texts = load_huggingface_corpus_data("rojagtap/bookcorpus")
-    if bookcorpus_texts:
-        all_texts.extend(bookcorpus_texts)
-        print(f"✅ Added {len(bookcorpus_texts)} texts from HuggingFace corpus")
+    # bookcorpus_texts = load_huggingface_corpus_data("rojagtap/bookcorpus")
+    # if bookcorpus_texts:
+    #     all_texts.extend(bookcorpus_texts)
+    #     print(f"✅ Added {len(bookcorpus_texts)} texts from HuggingFace corpus")
     
-    if not all_texts:
-        raise RuntimeError("❌ No corpus data could be loaded! Check your data sources.")
+    # if not all_texts:
+    #     raise RuntimeError("❌ No corpus data could be loaded! Check your data sources.")
     
-    print(f"Total texts loaded: {len(all_texts)}")
+    # print(f"Total texts loaded: {len(all_texts)}")
     
     # Split combined data into train/test
     split_idx = int(train_split * len(all_texts))
@@ -122,9 +123,29 @@ def load_tokens(tokenizer, train_split=0.9):
 
 def prepare_dataloader(tokens, config):
     """
-    Wrap GPTDataset in a DataLoader
+    Wrap GPTDataset in a DataLoader with validation
     """
-    dataset = GPTDataset(tokens, config.SEQ_LEN)
+    # Validate we have enough tokens
+    if len(tokens) < config.SEQ_LEN:
+        print(f"⚠️  Warning: Only {len(tokens)} tokens available, but SEQ_LEN={config.SEQ_LEN}")
+        print(f"   Dataset will be empty. Consider:")
+        print(f"   1. Adding more training data")
+        print(f"   2. Reducing SEQ_LEN in config")
+        
+        # For testing purposes, use a smaller sequence length
+        effective_seq_len = min(config.SEQ_LEN, max(1, len(tokens) // 2))
+        print(f"   Using effective SEQ_LEN={effective_seq_len} for this run")
+    else:
+        effective_seq_len = config.SEQ_LEN
+    
+    dataset = GPTDataset(tokens, effective_seq_len)
+    
+    # Validate dataset has samples
+    if len(dataset) == 0:
+        raise ValueError(f"Dataset is empty! Need at least {effective_seq_len + 1} tokens, got {len(tokens)}")
+    
+    print(f"   Created dataset with {len(dataset)} samples (seq_len={effective_seq_len})")
+    
     return DataLoader(
         dataset,
         batch_size=config.BATCH_SIZE,

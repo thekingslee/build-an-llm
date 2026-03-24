@@ -41,10 +41,15 @@ def train():
     criterion = nn.CrossEntropyLoss()
 
     # ------------------- Scheduler -------------------
+    batches_per_epoch = len(train_loader)
+    actual_total_steps = batches_per_epoch * CONFIG.EPOCHS
+    print(f"[Scheduler Setup] Actual total training steps (batches_per_epoch * epochs): {actual_total_steps}")
+    print(f"[Scheduler Setup] Scheduler will use min({CONFIG.WARMUP_STEPS}, {actual_total_steps // 10}) warmup steps.")
+
     scheduler = get_cosine_schedule_with_warmup(
         optimizer,
-        num_warmup_steps=CONFIG.WARMUP_STEPS,
-        num_training_steps=CONFIG.TOTAL_TRAINING_STEPS
+        num_warmup_steps=min(CONFIG.WARMUP_STEPS, actual_total_steps // 10),
+        num_training_steps=actual_total_steps
     )
 
     # ------------------- W&B Logging -------------------
