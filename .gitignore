@@ -6,6 +6,9 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# NLTK corpora downloaded by notebooks/scripts
+.nltk_data/
+
 # Virtual environment
 .venv/
 venv/

@@ -126,7 +126,7 @@ def load_tokens(tokenizer, train_split=0.8, val_split=0.1):
     print(f"✅ Tokenization complete!")
     return train_tokens, val_tokens, test_tokens
 
-def prepare_dataloader(tokens, config):
+def prepare_dataloader(tokens, config, split):
     """
     Wrap GPTDataset in a DataLoader with validation
     """
@@ -146,7 +146,7 @@ def prepare_dataloader(tokens, config):
     if len(dataset) == 0:
         raise ValueError(f"Dataset is empty! Need at least {effective_seq_len + 1} tokens, got {len(tokens)}")
     
-    print(f"   Created dataset with {len(dataset)} samples (seq_len={effective_seq_len})")
+    print(f"   Created dataset tokens for {split} with {len(dataset)} samples (seq_len={effective_seq_len})")
     
     return DataLoader(
         dataset,

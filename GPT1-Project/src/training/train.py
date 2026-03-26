@@ -23,9 +23,9 @@ def train():
 
     # ------------------- Load Dataset -------------------
     train_tokens, val_tokens, test_tokens = load_tokens(tokenizer)
-    train_loader = prepare_dataloader(train_tokens, CONFIG)
-    val_loader = prepare_dataloader(val_tokens, CONFIG)
-    test_loader = prepare_dataloader(test_tokens, CONFIG)
+    train_loader = prepare_dataloader(train_tokens, CONFIG, "train")
+    val_loader = prepare_dataloader(val_tokens, CONFIG, "validate")
+    test_loader = prepare_dataloader(test_tokens, CONFIG, "test")
 
     print(f"Train batches: {len(train_loader)}, Val batches: {len(val_loader)}, Test batches: {len(test_loader)}")
 
