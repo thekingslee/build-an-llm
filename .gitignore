@@ -1,9 +1,13 @@
 scraped_pages/
+scraped_pages_pdf/
 
 # Python bytecode cache
 __pycache__/
 *.py[cod]
 *$py.class
+
+# NLTK corpora downloaded by notebooks/scripts
+.nltk_data/
 
 # Virtual environment
 .venv/
@@ -26,6 +30,6 @@ checkpoints/
 wandb/
 
 # Data files (optional - depends if you want to track your dataset)
-data/
+/GPT1-Project/data/
 *.txt
 

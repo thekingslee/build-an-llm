@@ -58,18 +58,18 @@ class TransformerBlock(nn.Module):
 
 
 class GPT1(nn.Module):
-    def __init__(self, vocab_size, config):
+    def __init__(self, vocab_size, embed_size, num_layers, heads, max_len):
         super().__init__()
 
-        self.token_embedding = nn.Embedding(vocab_size, config.EMBED_SIZE)
-        self.position_embedding = nn.Embedding(config.MAX_LEN, config.EMBED_SIZE)
+        self.token_embedding = nn.Embedding(vocab_size, embed_size)
+        self.position_embedding = nn.Embedding(max_len, embed_size)
 
         self.layers = nn.ModuleList(
-            [TransformerBlock(config.EMBED_SIZE, config.HEADS) for _ in range(config.NUM_LAYERS)]
+            [TransformerBlock(embed_size, heads) for _ in range(num_layers)]
         )
 
-        self.norm = nn.LayerNorm(config.EMBED_SIZE)
-        self.fc_out = nn.Linear(config.EMBED_SIZE, vocab_size)
+        self.norm = nn.LayerNorm(embed_size)
+        self.fc_out = nn.Linear(embed_size, vocab_size)
 
     def forward(self, x):
         N, seq_len = x.shape
