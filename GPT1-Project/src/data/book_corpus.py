@@ -113,19 +113,19 @@ def load_tokens(tokenizer, train_split=0.8, val_split=0.1):
     train_tokens = []
     for text in train_texts:
         if text.strip():  # Skip empty texts
-            train_tokens.extend(tokenizer.encode(text))
+            train_tokens.extend(tokenizer.encode(text, max_length=CONFIG.MAX_LEN, truncation=True))
     
     # Tokenize validation data
     val_tokens = []
     for text in val_texts:
         if text.strip():  # Skip empty texts
-            val_tokens.extend(tokenizer.encode(text))
+            val_tokens.extend(tokenizer.encode(text, max_length=CONFIG.MAX_LEN, truncation=True))
 
     # Tokenize test data
     test_tokens = []
     for text in test_texts:
         if text.strip():  # Skip empty texts
-            test_tokens.extend(tokenizer.encode(text))
+            test_tokens.extend(tokenizer.encode(text, max_length=CONFIG.MAX_LEN, truncation=True))
     
     print(f"✅ Tokenization complete!")
     return train_tokens, val_tokens, test_tokens
