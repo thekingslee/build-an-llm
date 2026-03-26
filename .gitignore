@@ -32,6 +32,4 @@ wandb/
 # Data files (optional - depends if you want to track your dataset)
 /GPT1-Project/data/
 *.txt
-/GPT1-Project/requirements.txt
-/GPT1-Project/requirements.in
 
