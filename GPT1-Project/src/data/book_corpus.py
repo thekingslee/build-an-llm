@@ -59,7 +59,7 @@ def load_huggingface_corpus_data(source):
     Load BookCorpus from HuggingFace
     """
     try:
-        dataset = load_dataset(source, split="train[:1%]")
+        dataset = load_dataset(source, split="train")
         texts = [item['text'] for item in dataset if item['text'].strip()]
         return texts
     except Exception as e:
@@ -80,21 +80,25 @@ def load_tokens(tokenizer, train_split=0.8, val_split=0.1):
     all_texts = []
     
     # Load local Nigerian corpus
-    local_texts = load_local_corpus_data("data/")
+    # local_texts = load_local_corpus_data("data/")
+    # if local_texts:
+    #     all_texts.extend(local_texts)
+    #     print(f"✅ Added {len(local_texts)} texts from local corpus")
+    local_texts = load_huggingface_corpus_data("thekingslee/9ja-bookcorpus")
     if local_texts:
         all_texts.extend(local_texts)
-        print(f"✅ Added {len(local_texts)} texts from local corpus")
+        print(f"✅ Added 9ja-bookcorpus of {len(local_texts)} texts from HuggingFace")
     
     # Load HuggingFace BookCorpus
-    # bookcorpus_texts = load_huggingface_corpus_data("rojagtap/bookcorpus")
-    # if bookcorpus_texts:
-    #     all_texts.extend(bookcorpus_texts)
-    #     print(f"✅ Added {len(bookcorpus_texts)} texts from HuggingFace corpus")
+    bookcorpus_texts = load_huggingface_corpus_data("rojagtap/bookcorpus")
+    if bookcorpus_texts:
+        all_texts.extend(bookcorpus_texts)
+        print(f"✅ Added {len(bookcorpus_texts)} texts from HuggingFace corpus")
     
-    # if not all_texts:
-    #     raise RuntimeError("❌ No corpus data could be loaded! Check your data sources.")
+    if not all_texts:
+        raise RuntimeError("❌ No corpus data could be loaded! Check your data sources.")
     
-    # print(f"Total texts loaded: {len(all_texts)}")
+    print(f"Total texts loaded: {len(all_texts)}")
     
     # Split combined data into train/val/test
     train_end = int(train_split * len(all_texts))

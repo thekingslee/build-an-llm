@@ -15,7 +15,13 @@ from src.utils.config import CONFIG
 
 def train():
     # ------------------- Device -------------------
-    device = CONFIG.DEVICE
+    if torch.cuda.is_available():
+        device = "cuda"
+    elif torch.backends.mps.is_available(): # For Apple Silicon GPUs
+        device = "mps"
+    else:
+        device = "cpu"
+
     print(f"Using device: {device}")
 
     # ------------------- Tokenizer -------------------
