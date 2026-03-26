@@ -1,12 +1,33 @@
 # GPT1 project
 
-Python environment for this repo lives at the **monorepo root**. From the repository root directory:
+This project implements a GPT-1 like model for text generation.
+
+### Setup
+
+1.  **Clone the repository:**
+
+    ```bash
+    git clone https://github.com/your-repo/GPT1-Project.git
+    cd GPT1-Project
+    ```
+
+2.  **Create a virtual environment and install dependencies:**
+
+    ```bash
+    python -m venv venv
+    source venv/bin/activate
+    uv pip install -r requirements.txt
+    ```
+
+### Usage
+
+To train the model, run:
 
 ```bash
-uv sync
-uv run python GPT1-Project/scripts/run_training.py
+python src/training/train.py
 ```
 
-Alternatively, activate the root `.venv` (or select it in your IDE) and run `python scripts/run_training.py` from inside `GPT1-Project/`.
+### Configuration
 
+Model and training parameters can be adjusted in `src/utils/config.py`.
 
