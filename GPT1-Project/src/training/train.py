@@ -175,6 +175,27 @@ def train():
         print(f"Epoch {epoch} | Avg Val Loss: {avg_val_loss:.4f}")
         wandb.log({"val_loss": avg_val_loss, "epoch": epoch})
 
+        # Save checkpoint at the end of each epoch
+        epoch_checkpoint_path = os.path.join(checkpoint_dir, f"gpt1_epoch_{epoch+1}.pt")
+        torch.save({
+            "step": global_step,
+            "epoch": epoch,
+            "model_state_dict": model.state_dict(),
+            "optimizer_state_dict": optimizer.state_dict(),
+            "scheduler_state_dict": scheduler.state_dict(),
+            "loss": avg_val_loss,  # Using validation loss for epoch checkpoint
+        }, epoch_checkpoint_path)
+        torch.save({
+            "step": global_step,
+            "epoch": epoch,
+            "model_state_dict": model.state_dict(),
+            "optimizer_state_dict": optimizer.state_dict(),
+            "scheduler_state_dict": scheduler.state_dict(),
+            "loss": avg_val_loss,
+        }, latest_ckpt)
+        wandb.save(epoch_checkpoint_path)
+        print(f"Checkpoint saved at end of Epoch {epoch+1} to {epoch_checkpoint_path}")
+
         # Early 
         # If no meaningful improvement in the val_loss after 3 consecutive epoch, we terminate.
         if avg_val_loss < (best_val_loss - CONFIG.EARLY_STOPPING_MIN_DELTA):
