@@ -85,10 +85,11 @@ def load_tokens(tokenizer, train_split=0.8, val_split=0.1):
     # if local_texts:
     #     all_texts.extend(local_texts)
     #     print(f"✅ Added {len(local_texts)} texts from local corpus")
-    # local_texts = load_huggingface_corpus_data("thekingslee/9ja-bookcorpus")
-    # if local_texts:
-    #     all_texts.extend(local_texts)
-    #     print(f"✅ Added 9ja-bookcorpus of {len(local_texts)} texts from HuggingFace")
+
+    local_texts = load_huggingface_corpus_data("thekingslee/9ja-bookcorpus")
+    if local_texts:
+        all_texts.extend(local_texts)
+        print(f"✅ Added 9ja-bookcorpus of {len(local_texts)} texts from HuggingFace")
     
     # Load HuggingFace BookCorpus
     bookcorpus_texts = load_huggingface_corpus_data("rojagtap/bookcorpus")

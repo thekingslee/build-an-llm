@@ -20,8 +20,9 @@ class Config:
     # --------- Scheduler & Checkpointing ---------
     TOTAL_TRAINING_STEPS: int = 100000
     WARMUP_STEPS: int = 2000
-    SAVE_EVERY: int = 500
-    CHECKPOINT_DIR: str = "./checkpoints"
+    SAVE_EVERY: int = 2000
+    # CHECKPOINT_DIR: str = "./checkpoints"
+    CHECKPOINT_DIR: str = "/content/drive/MyDrive/GPT1_Checkpoints" # Adjusted for Google Drive in Colab
 
     # ------------------- Device -------------------
     DEVICE: str = "cuda" if __import__('torch').cuda.is_available() else "cpu"
