@@ -4,6 +4,7 @@ from torch.utils.data import Dataset, DataLoader
 import torch
 from transformers import GPT2Tokenizer
 from datasets import load_dataset
+from src.utils.config import CONFIG
 
 class GPTDataset(Dataset):
     def __init__(self, tokens, seq_len):
@@ -84,10 +85,10 @@ def load_tokens(tokenizer, train_split=0.8, val_split=0.1):
     # if local_texts:
     #     all_texts.extend(local_texts)
     #     print(f"✅ Added {len(local_texts)} texts from local corpus")
-    local_texts = load_huggingface_corpus_data("thekingslee/9ja-bookcorpus")
-    if local_texts:
-        all_texts.extend(local_texts)
-        print(f"✅ Added 9ja-bookcorpus of {len(local_texts)} texts from HuggingFace")
+    # local_texts = load_huggingface_corpus_data("thekingslee/9ja-bookcorpus")
+    # if local_texts:
+    #     all_texts.extend(local_texts)
+    #     print(f"✅ Added 9ja-bookcorpus of {len(local_texts)} texts from HuggingFace")
     
     # Load HuggingFace BookCorpus
     bookcorpus_texts = load_huggingface_corpus_data("rojagtap/bookcorpus")
