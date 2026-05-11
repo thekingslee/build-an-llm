@@ -7,7 +7,7 @@ def load_tokens_from_drive(dataset_name):
     """
     Load tokenized train/test splits from saved cache in Drive.
     """
-    saved_path = os.path.join(CONFIG.CHECKPOINT_DIR, dataset_name)
+    saved_path = os.path.join(CONFIG.DATASET_DIR, dataset_name)
 
     if not os.path.exists(saved_path):
         raise FileNotFoundError(

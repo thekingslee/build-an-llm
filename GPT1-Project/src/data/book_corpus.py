@@ -4,7 +4,7 @@ from torch.utils.data import Dataset, DataLoader
 import torch
 from transformers import GPT2Tokenizer
 from datasets import load_dataset
-from ablation_dataset import load_tokens_from_drive
+from src.data.ablation_dataset import load_tokens_from_drive
 from src.utils.config import CONFIG
 import random
 
@@ -149,7 +149,7 @@ def load_tokens(tokenizer, train_split=0.8, val_split=0.1):
     try:
         import os
 
-        save_dir = CONFIG.CHECKPOINT_DIR
+        save_dir = CONFIG.DATASET_DIR
         os.makedirs(save_dir, exist_ok=True)
         save_path = os.path.join(save_dir, "bookcorpus_tokenized_splits.pt")
 
