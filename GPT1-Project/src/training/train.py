@@ -66,8 +66,8 @@ def train():
         wandb.finish()
 
     wandb.init(
-        project="GPT1-9ja",
-        name="gpt1_colab_run",
+        project="GPT1-9ja-bookcorpus-ablation",
+        name="gpt1_colab_run_bookcorpus_ablation",
         config={
             "model": "GPT-1",
             "seq_len": CONFIG.SEQ_LEN,

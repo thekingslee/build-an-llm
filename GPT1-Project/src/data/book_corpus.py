@@ -4,7 +4,9 @@ from torch.utils.data import Dataset, DataLoader
 import torch
 from transformers import GPT2Tokenizer
 from datasets import load_dataset
+from ablation_dataset import load_tokens_from_drive
 from src.utils.config import CONFIG
+import random
 
 class GPTDataset(Dataset):
     def __init__(self, tokens, seq_len):
@@ -78,39 +80,49 @@ def load_tokens(tokenizer, train_split=0.8, val_split=0.1):
     Returns:
         train_tokens, val_tokens, test_tokens: Tokenized and split data
     """ 
-    all_texts = []
-    
-    # Load local Nigerian corpus
-    # local_texts = load_local_corpus_data("data/")
-    # if local_texts:
-    #     all_texts.extend(local_texts)
-    #     print(f"✅ Added {len(local_texts)} texts from local corpus")
 
-    local_texts = load_huggingface_corpus_data("thekingslee/9ja-bookcorpus")
-    if local_texts:
-        all_texts.extend(local_texts)
-        print(f"✅ Added 9ja-bookcorpus of {len(local_texts)} texts from HuggingFace")
+
+    all_texts = []
+    dataset_name = "bookcorpus_tokenized_splits.pt"
+
+
+
+    # ------------------- Get Saved Datasets from HuggingFace -------------------
+    try:
+        train_tokens, val_tokens, test_tokens = load_tokens_from_drive(dataset_name)
+        print("✅ Using cached tokenized/split data from Drive")
+        return train_tokens, val_tokens, test_tokens
+
+    except Exception as e:
+        print(f"⚠️  Could not use cached tokenized splits ({e}). Falling back to HuggingFace load.")
+
     
-    # Load HuggingFace BookCorpus
+
+    # ------------------- Load HuggingFace BookCorpus - When absent on Drive -------------------
     bookcorpus_texts = load_huggingface_corpus_data("rojagtap/bookcorpus")
     if bookcorpus_texts:
         all_texts.extend(bookcorpus_texts)
         print(f"✅ Added {len(bookcorpus_texts)} texts from HuggingFace corpus")
     
-    if not all_texts:
-        raise RuntimeError("❌ No corpus data could be loaded! Check your data sources.")
-    
     print(f"Total texts loaded: {len(all_texts)}")
-    
+
+    # Shuffle the data before splits
+    rng = random.Random(42)
+    rng.shuffle(all_texts)
+
     # Split combined data into train/val/test
     train_end = int(train_split * len(all_texts))
     val_end = train_end + int(val_split * len(all_texts))
+
     train_texts = all_texts[:train_end]
     val_texts = all_texts[train_end:val_end]
     test_texts = all_texts[val_end:]
     
     print(f"Data split: {len(train_texts)} train, {len(val_texts)} val, {len(test_texts)} test")
+
+
     
+    # ------------------- Tokenized Loaded HuggingFace BookCorpus -------------------
     # Tokenize train data
     train_tokens = []
     for text in train_texts:
@@ -130,6 +142,34 @@ def load_tokens(tokenizer, train_split=0.8, val_split=0.1):
             test_tokens.extend(tokenizer.encode(text, max_length=CONFIG.MAX_LEN, truncation=True))
     
     print(f"✅ Tokenization complete!")
+
+
+
+    # -------------------Save tokenized splits so ablation runs can reuse the exact same data. -------------------    
+    try:
+        import os
+
+        save_dir = CONFIG.CHECKPOINT_DIR
+        os.makedirs(save_dir, exist_ok=True)
+        save_path = os.path.join(save_dir, "bookcorpus_tokenized_splits.pt")
+
+        torch.save(
+            {
+                "train_tokens": train_tokens,
+                "val_tokens": val_tokens,
+                "test_tokens": test_tokens,
+                "train_split": train_split,
+                "val_split": val_split,
+                "num_texts": len(all_texts),
+                "seed": 42,
+            },
+            save_path,
+        )
+        print(f"✅ Saved tokenized shuffled splits to {save_path}")
+    except Exception as e:
+        print(f"⚠️  Could not save tokenized splits: {e}")
+
+
     return train_tokens, val_tokens, test_tokens
 
 def prepare_dataloader(tokens, config, split):
@@ -147,7 +187,7 @@ def prepare_dataloader(tokens, config, split):
         effective_seq_len = config.SEQ_LEN
     
     dataset = GPTDataset(tokens, effective_seq_len)
-    
+
     # Validate dataset has samples
     if len(dataset) == 0:
         raise ValueError(f"Dataset is empty! Need at least {effective_seq_len + 1} tokens, got {len(tokens)}")
