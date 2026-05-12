@@ -62,7 +62,7 @@ def load_huggingface_corpus_data(source):
     Load BookCorpus from HuggingFace
     """
     try:
-        dataset = load_dataset(source, split="train[:1%]")
+        dataset = load_dataset(source, split="train")
         texts = [item['text'] for item in dataset if item['text'].strip()]
         return texts
     except Exception as e:
