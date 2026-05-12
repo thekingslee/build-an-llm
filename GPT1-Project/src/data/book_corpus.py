@@ -82,8 +82,8 @@ def load_tokens(tokenizer, train_split=0.8, val_split=0.1):
     """ 
 
 
+    dataset_name = "naijacorpus_tokenized_splits.pt"
     all_texts = []
-    dataset_name = "bookcorpus_tokenized_splits.pt"
 
 
 
@@ -99,11 +99,11 @@ def load_tokens(tokenizer, train_split=0.8, val_split=0.1):
 
     
 
-    # ------------------- Load HuggingFace BookCorpus - When absent on Drive -------------------
-    bookcorpus_texts = load_huggingface_corpus_data("rojagtap/bookcorpus")
-    if bookcorpus_texts:
-        all_texts.extend(bookcorpus_texts)
-        print(f"✅ Added {len(bookcorpus_texts)} texts from HuggingFace corpus")
+    # ------------------- Load HuggingFace Naija Bookcorpus - When absent on Drive -------------------
+    naijacorpus_texts = load_huggingface_corpus_data("thekingslee/9ja-bookcorpus")
+    if naijacorpus_texts:
+        all_texts.extend(naijacorpus_texts)
+        print(f"✅ Added 9ja-bookcorpus of {len(naijacorpus_texts)} texts from HuggingFace")
     
     print(f"Total texts loaded: {len(all_texts)}")
 
@@ -152,7 +152,7 @@ def load_tokens(tokenizer, train_split=0.8, val_split=0.1):
 
         save_dir = CONFIG.DATASET_DIR
         os.makedirs(save_dir, exist_ok=True)
-        save_path = os.path.join(save_dir, "bookcorpus_tokenized_splits.pt")
+        save_path = os.path.join(save_dir, dataset_name)
 
         torch.save(
             {
