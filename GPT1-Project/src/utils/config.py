@@ -5,7 +5,7 @@ from dataclasses import dataclass
 @dataclass
 class Config:
     # ---------------- Data & Training ----------------
-    BATCH_SIZE: int = 128 #64  # GPT-1 original: 64 minibatch size
+    BATCH_SIZE: int = 64 #64  # GPT-1 original: 64 minibatch size
     SEQ_LEN: int = 512  # Context length for training sequences: 512 tokens
     EPOCHS: int = 100  # GPT-1 original: 100 epochs
     LEARNING_RATE: float = 3e-4  # GPT-1 original: 2.5e-4 max learning rate
