@@ -12,15 +12,11 @@ To set up the project, follow these steps:
    git clone https://github.com/thekingslee/build-an-llm.git
    cd build-an-llm
    ```
-
-2. Install the required dependencies, make sure you are in the parent directory:
-   ```bash
-   pip install .
-   ```
-
-3. Python environment for this repo lives at the monorepo root. From the repository root directory:
+   
+2. Python environment for this repo lives at the monorepo roo and installing the required libraries and dependencies. From the repository root directory:
    ```bash
    uv sync
+   pip install .
    uv run python GPT1-Project/scripts/run_training.py
    ```
    Alternatively, activate the root .venv (or select it in your IDE) and run python scripts/run_training.py from inside GPT1-Project/.
@@ -28,11 +24,11 @@ To set up the project, follow these steps:
 ## Usage
 To scrape a text source on the web, run the below on terminal:
 ```bash
-python3 scrape_webpage.py 'source link'
+python3 web_scrape/scrape_webpage.py 'source link'
 ```
 To extract text data from a files: NB: Always remember the trailing '/'
 ```bash
-python3 scrape_local_pdf.py "file's directory/"
+python3 pdf_scrape/scrape_local_pdf.py "file's directory/"
 ```
 
 ## Directory Structure
