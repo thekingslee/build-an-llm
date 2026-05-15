@@ -13,11 +13,11 @@ To set up the project, follow these steps:
    cd build-an-llm
    ```
    
-2. Python environment for this repo lives at the monorepo roo and installing the required libraries and dependencies. From the repository root directory:
+2. Python environment for this repo lives at the monorepo root. From the repository root directory:
    ```bash
+   python3 -m venv venv
+   source venv/bin/activate
    uv sync
-   pip install .
-   uv run python GPT1-Project/scripts/run_training.py
    ```
    Alternatively, activate the root .venv (or select it in your IDE) and run python scripts/run_training.py from inside GPT1-Project/.
 
@@ -58,6 +58,12 @@ python3 pdf_scrape/scrape_local_pdf.py "file's directory/"
 - uv.lock
 - `README.md`
 
+## Model Config
+| Model | Params | n_layer | n_head | n_embd |
+|-------|--------|---------|--------|--------|
+| 30M model | 30M | 4 | 4 | 256 |
+110M model | 110M |12|12|768
+
 
 
 ## Contributing
@@ -80,4 +86,4 @@ We welcome contributions! Please follow these steps to contribute:
 
 
 ## Acknowledgements
-- Special thanks to the authors whose works inspired this project, https://thekingslee, https://github.com/MLHermit and https://github.com/AyeniOluwatosinOlawale
+- Special thanks to the authors whose works inspired this project, Kingsley Nworie https://thekingslee, Abdullahi Mujaheed Aliyu https://github.com/MLHermit and Ayeni Oluwatosin Olawale https://github.com/AyeniOluwatosinOlawale
