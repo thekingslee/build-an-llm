@@ -4,7 +4,7 @@
 Large Language Model (LLM) from the ground up, based on the GPT-1 implementation. This model will be trained on Nigerian text data extracted from various sources.
 The final mined data in the course of this project is at https://huggingface.co/datasets/theKingslee/9ja-bookcorpus
 
-## Installation Instructions
+## Setup Instructions
 To set up the project, follow these steps:
 
 1. Clone the repository:
@@ -61,12 +61,16 @@ python3 pdf_scrape/scrape_local_pdf.py "file's directory/"
 ## Model Config
 | Model | Params | n_layer | n_head | n_embd |
 |-------|--------|---------|--------|--------|
-| 30M model | 30M | 4 | 4 | 256 |
-110M model | 110M |12|12|768
+| 30M model | ~30M | 4 | 4 | 256 |
+110M model | ~110M |12|12|768
+
+## Project Video Map and Receipts
+- Project inception: https://x.com/theKingslee/status/2020561221460607079?s=20
+- Team selection: https://x.com/theKingslee/status/2029879926405435507?s=20
+- Basic terms and processes definitions: https://x.com/theKingslee/status/2030269155039985886?s=20
 
 
-
-## Contributing
+## Contribution
 We welcome contributions! Please follow these steps to contribute:
 
 1. Fork the repository.
