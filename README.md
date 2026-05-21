@@ -65,10 +65,10 @@ python3 pdf_scrape/scrape_local_pdf.py "file's directory/"
 110M model | ~110M |12|12|768
 
 ## Project Video Map and Receipts
-- Project inception: https://x.com/theKingslee/status/2020561221460607079?s=20
-- Team selection: https://x.com/theKingslee/status/2029879926405435507?s=20
-- Basic terms and processes definitions: https://x.com/theKingslee/status/2030269155039985886?s=20
-
+- [Project inception](https://x.com/theKingslee/status/2020561221460607079?s=20)
+- [Team selection](https://x.com/theKingslee/status/2029879926405435507?s=20)
+- [Basic terms and processes definitions](https://x.com/theKingslee/status/2030269155039985886?s=20)
+- [First interaction with model after pre-training](https://x.com/theKingslee/status/2057103886633037833?s=20)
 
 ## Contribution
 We welcome contributions! Please follow these steps to contribute:
