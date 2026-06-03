@@ -53,6 +53,7 @@ def train():
     # ------------------- Scheduler -------------------
     batches_per_epoch = len(train_loader)
     actual_total_steps = batches_per_epoch * CONFIG.EPOCHS
+    print(f"[Scheduler Setup] Total training steps per epoch(batches_per_epoch): {batches_per_epoch}")
     print(f"[Scheduler Setup] Actual total training steps (batches_per_epoch * epochs): {actual_total_steps}")
     print(f"[Scheduler Setup] Scheduler will use min({CONFIG.WARMUP_STEPS}, {actual_total_steps // 10}) warmup steps.")
 

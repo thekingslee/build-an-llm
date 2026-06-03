@@ -57,12 +57,12 @@ def load_local_corpus_data(data_dir):
         print(f"⚠️  Error accessing directory {data_dir}: {e}")
         return []
 
-def load_huggingface_corpus_data(source):
+def load_huggingface_corpus_data(source, split):
     """
     Load BookCorpus from HuggingFace
     """
     try:
-        dataset = load_dataset(source, split="train")
+        dataset = load_dataset(source, split=f"train[{split}]")
         texts = [item['text'] for item in dataset if item['text'].strip()]
         return texts
     except Exception as e:
@@ -104,6 +104,11 @@ def load_tokens(tokenizer, train_split=0.8, val_split=0.1):
     if naijacorpus_texts:
         all_texts.extend(naijacorpus_texts)
         print(f"✅ Added 9ja-bookcorpus of {len(naijacorpus_texts)} texts from HuggingFace")
+
+    bookcorpus_split_texts = load_huggingface_corpus_data("rojagtap/bookcorpus")
+    if bookcorpus_split_texts:
+        all_texts.extend(bookcorpus_split_texts)
+        print(f"✅ Added GPT-1 bookcorpus of {len(bookcorpus_split_texts)} texts from HuggingFace")
     
     print(f"Total texts loaded: {len(all_texts)}")
 
