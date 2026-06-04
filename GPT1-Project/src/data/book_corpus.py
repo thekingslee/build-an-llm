@@ -57,12 +57,12 @@ def load_local_corpus_data(data_dir):
         print(f"⚠️  Error accessing directory {data_dir}: {e}")
         return []
 
-def load_huggingface_corpus_data(source, split):
+def load_huggingface_corpus_data(source, split="100%"):
     """
     Load BookCorpus from HuggingFace
     """
     try:
-        dataset = load_dataset(source, split=f"train[{split}]")
+        dataset = load_dataset(source, split=f"train[:{split}]")
         texts = [item['text'] for item in dataset if item['text'].strip()]
         return texts
     except Exception as e:
@@ -82,7 +82,7 @@ def load_tokens(tokenizer, train_split=0.8, val_split=0.1):
     """ 
 
 
-    dataset_name = "naijacorpus_tokenized_splits.pt"
+    dataset_name = "300token_tokenized_splits.pt"
     all_texts = []
 
 
@@ -105,7 +105,7 @@ def load_tokens(tokenizer, train_split=0.8, val_split=0.1):
         all_texts.extend(naijacorpus_texts)
         print(f"✅ Added 9ja-bookcorpus of {len(naijacorpus_texts)} texts from HuggingFace")
 
-    bookcorpus_split_texts = load_huggingface_corpus_data("rojagtap/bookcorpus")
+    bookcorpus_split_texts = load_huggingface_corpus_data("rojagtap/bookcorpus", split="30%")
     if bookcorpus_split_texts:
         all_texts.extend(bookcorpus_split_texts)
         print(f"✅ Added GPT-1 bookcorpus of {len(bookcorpus_split_texts)} texts from HuggingFace")
@@ -146,7 +146,8 @@ def load_tokens(tokenizer, train_split=0.8, val_split=0.1):
     for text in test_texts:
         if text.strip():  # Skip empty texts
             test_tokens.extend(tokenizer.encode(text, max_length=CONFIG.MAX_LEN, truncation=True))
-    
+
+    print(f"Total Token split: {len(train_tokens)} train, {len(val_tokens)} val, {len(test_tokens)} test")
     print(f"✅ Tokenization complete!")
 
 
