@@ -112,6 +112,11 @@ def load_tokens(tokenizer, train_split=0.8, val_split=0.1):
     
     print(f"Total texts loaded: {len(all_texts)}")
 
+
+    # ------------------- Clean Raw Texts (NEW STEP) -------------------
+    cleaned_texts = clean_data(all_texts)
+    all_texts = cleaned_texts
+
     # Shuffle the data before splits
     rng = random.Random(42)
     rng.shuffle(all_texts)
@@ -200,9 +205,54 @@ def prepare_dataloader(tokens, config, split):
         raise ValueError(f"Dataset is empty! Need at least {effective_seq_len + 1} tokens, got {len(tokens)}")
     
     print(f"   Created dataset tokens for {split} with {len(dataset)} samples (seq_len={effective_seq_len})")
+
+    # Only shuffle if this is the training split
+    is_train = (split.lower() == "train")
     
     return DataLoader(
         dataset,
         batch_size=config.BATCH_SIZE,
-        shuffle=True
+        shuffle=is_train,  # True for train, False for val/test
+        drop_last=True if is_train else False
     )
+
+def clean_data(dataset):
+    print("Cleaning datasets (removing standalone punctuation and empty lines)...")
+    cleaned_texts = []
+
+    for text in dataset:
+        stripped_text = text.strip()
+        
+        # 1. Skip if empty
+        if not stripped_text:
+            continue
+            
+        # 2. Skip if it is just a standalone period or punctuation mark (length <= 2)
+        if len(stripped_text) <= 2:
+            continue
+            
+        # 3. Robust Check: Skip if the line contains absolutely no alphanumeric letters/numbers
+        if not any(char.isalnum() for char in stripped_text):
+            continue
+            
+        cleaned_texts.append(text)
+        
+    print(f"Cleaning complete. Dropped {len(dataset) - len(cleaned_texts)} junk lines.")
+    print(f"Remaining clean texts: {len(cleaned_texts)}")
+
+    # import pickle
+    # import os
+
+    # local_cache_dir = "./local_cache"
+    # os.makedirs(local_cache_dir, exist_ok=True)
+    # local_cache_path = os.path.join(local_cache_dir, "cleaned_text_strings.pkl")
+
+    # try:
+    #     print(f"Caching {len(cleaned_texts)} cleaned text strings locally...")
+    #     with open(local_cache_path, "wb") as f:
+    #         pickle.dump(cleaned_texts, f, protocol=pickle.HIGHEST_PROTOCOL)
+    #     print(f"✅ Cleaned dataset cached locally at: {local_cache_path}")
+    # except Exception as e:
+    #     print(f"⚠️  Failed to save local cache (but continuing pipeline): {e}")
+
+    return cleaned_texts

@@ -119,6 +119,16 @@ def train():
             outputs = model(x)
             loss = criterion(outputs.view(-1, outputs.size(-1)), y.view(-1))
             loss.backward()
+
+            total_norm = 0.0
+            for p in model.parameters():
+                if p.grad is not None:
+                    param_norm = p.grad.data.norm(2)
+                    total_norm += param_norm.item() ** 2
+            total_norm = total_norm ** 0.5
+
+            torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
+
             optimizer.step()
             scheduler.step()
 
@@ -152,7 +162,7 @@ def train():
 
             # Log every 50 batches
             if batch_idx % 50 == 0:
-                print(f"Epoch {epoch+1}, Batch {batch_idx}, Loss: {loss.item():.4f}")
+                print(f"Epoch {epoch+1}, Batch {batch_idx}, Loss: {loss.item():.4f}, Grad Norm: {total_norm:.6f}")
                 # W&B logging
                 wandb.log({
                     "batch_loss": loss.item(),
