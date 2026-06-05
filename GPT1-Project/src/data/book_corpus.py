@@ -134,24 +134,42 @@ def load_tokens(tokenizer, train_split=0.8, val_split=0.1):
 
     
     # ------------------- Tokenized Loaded HuggingFace BookCorpus -------------------
-    # Tokenize train data
-    train_tokens = []
-    for text in train_texts:
-        if text.strip():  # Skip empty texts
-            train_tokens.extend(tokenizer.encode(text, max_length=CONFIG.MAX_LEN, truncation=True))
+    print(f"Starting fast parallel tokenization for {len(all_texts)} texts...")
     
-    # Tokenize validation data
-    val_tokens = []
-    for text in val_texts:
-        if text.strip():  # Skip empty texts
-            val_tokens.extend(tokenizer.encode(text, max_length=CONFIG.MAX_LEN, truncation=True))
+    def tokenize_split_in_batches(texts, batch_size=50000):
+        token_ids = []
+        # Process the strings in large blocks to maximize multi-threading efficiency
+        for i in range(0, len(texts), batch_size):
+            batch = texts[i : i + batch_size]
+            
+            # batch_encode_plus releases the GIL and processes rows in parallel using Rust
+            encodings = tokenizer.batch_encode_plus(
+                batch,
+                add_special_tokens=False, # Standard for GPT pre-training
+                truncation=True,
+                max_length=CONFIG.MAX_LEN
+            )
+            
+            # Flatten the list of lists into a single continuous token stream
+            for encoding in encodings["input_ids"]:
+                token_ids.extend(encoding)
+                
+            if i % (batch_size * 4) == 0 and i > 0:
+                print(f"Processed {i}/{len(texts)} texts...")
+                
+        return token_ids
+    
 
-    # Tokenize test data
-    test_tokens = []
-    for text in test_texts:
-        if text.strip():  # Skip empty texts
-            test_tokens.extend(tokenizer.encode(text, max_length=CONFIG.MAX_LEN, truncation=True))
+    # Tokenize train data
+    print("Tokenizing train split...")
+    train_tokens = tokenize_split_in_batches(train_texts)
 
+    print("Tokenizing validation split...")
+    val_tokens = tokenize_split_in_batches(val_texts)
+
+    print("Tokenizing test split...")
+    test_tokens = tokenize_split_in_batches(test_texts)
+    
     print(f"Total Token split: {len(train_tokens)} train, {len(val_tokens)} val, {len(test_tokens)} test")
     print(f"✅ Tokenization complete!")
 
