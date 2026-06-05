@@ -2,11 +2,11 @@
 
 from torch.utils.data import Dataset, DataLoader
 import torch
-from transformers import GPT2Tokenizer
 from datasets import load_dataset
 from src.data.ablation_dataset import load_tokens_from_drive
 from src.utils.config import CONFIG
 import random
+from tqdm import tqdm
 
 class GPTDataset(Dataset):
     def __init__(self, tokens, seq_len):
@@ -139,11 +139,11 @@ def load_tokens(tokenizer, train_split=0.8, val_split=0.1):
     def tokenize_split_in_batches(texts, batch_size=50000):
         token_ids = []
         # Process the strings in large blocks to maximize multi-threading efficiency
-        for i in range(0, len(texts), batch_size):
+        for i in tqdm(range(0, len(texts), batch_size), desc = "Tokenizing batches"):
             batch = texts[i : i + batch_size]
             
             # batch_encode_plus releases the GIL and processes rows in parallel using Rust
-            encodings = tokenizer.batch_encode_plus(
+            encodings = tokenizer(
                 batch,
                 add_special_tokens=False, # Standard for GPT pre-training
                 truncation=True,
