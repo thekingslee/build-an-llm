@@ -15,7 +15,7 @@ def load_tokens_from_drive(dataset_name):
         )
 
     try:
-        cached = torch.load(saved_path, map_location="cpu")
+        cached = torch.load(saved_path, map_location="cpu", weights_only=True)
     except Exception as e:
         raise RuntimeError(f"Could not load cached tokenized splits from {saved_path}: {e}") from e
 

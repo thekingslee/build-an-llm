@@ -3,15 +3,19 @@
 import torch
 from torch import nn
 from torch.utils.data import DataLoader
+from torch.cuda.amp import GradScaler, autocast
 from transformers import get_cosine_schedule_with_warmup, GPT2Tokenizer
 import wandb
 import tqdm
 import os
+import glob
+from datetime import datetime
 
 # Project modules
 from src.models.gpt1 import GPT1
 from src.data.book_corpus import load_tokens, prepare_dataloader
 from src.utils.config import CONFIG
+from src.utils.helpers import rotate_step_checkpoints
 
 def train():
     # ------------------- Device -------------------
@@ -69,8 +73,8 @@ def train():
         wandb.finish()
 
     wandb.init(
-        project="GPT1-9ja-localcorpus-ablation",
-        name="gpt1_colab_run_localcorpus_ablation",
+        project="30M-GPT1-Model",
+        name=f"30m_gpt1_runpod_{datetime.now()}",
         config={
             "model": "GPT-1",
             "seq_len": CONFIG.SEQ_LEN,
@@ -78,6 +82,8 @@ def train():
             "learning_rate": CONFIG.LEARNING_RATE,
             "optimizer": "AdamW",
             "epochs": CONFIG.EPOCHS,
+            "use_amp": CONFIG.USE_AMP,
+            "warmup_steps": CONFIG.WARMUP_STEPS,
         }
     )
 
@@ -86,26 +92,37 @@ def train():
 
     # ----------------- Checkpoint Settings -----------------
     checkpoint_dir = CONFIG.CHECKPOINT_DIR
-    
     os.makedirs(checkpoint_dir, exist_ok=True)
-    latest_ckpt = os.path.join(checkpoint_dir, "latest_checkpoint.pt")
+    latest_ckpt   = os.path.join(checkpoint_dir, "latest_checkpoint.pt")
+    best_ckpt     = os.path.join(checkpoint_dir, "best_model.pt")
+
+    # ----------------- AMP Scaler -----------------
+    # GradScaler keeps fp16 gradients from underflowing during backward.
+    # It's a no-op when USE_AMP=False (enabled=False), so no conditional logic needed below.
+    scaler = GradScaler(enabled=CONFIG.USE_AMP)
 
     # ----------------- Resume from checkpoint if exists -----------------
     global_step = 0
     start_epoch = 0
+    best_val_loss = float("inf")
 
     if os.path.exists(latest_ckpt):
-        checkpoint = torch.load(latest_ckpt, map_location=device)
+        checkpoint = torch.load(latest_ckpt, map_location=device, weights_only=True)
         model.load_state_dict(checkpoint["model_state_dict"])
         optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
         scheduler.load_state_dict(checkpoint["scheduler_state_dict"])
+        if "scaler_state_dict" in checkpoint:
+            scaler.load_state_dict(checkpoint["scaler_state_dict"]) # For backward compatibility with older checkpoints
         global_step = checkpoint["step"]
         start_epoch = checkpoint["epoch"]
+        best_val_loss = checkpoint.get("best_val_loss", float("inf"))
         print(f"Resuming from checkpoint: step {global_step}, epoch {start_epoch}")
 
+
     # ----------------- Early Stopping State -----------------
-    best_val_loss = float("inf")
     epochs_without_improvement = 0
+    step_ckpt_paths = []  # Tracks saved step checkpoints for rotation
+
 
     # ------------------- Training Loop -------------------
     for epoch in range(start_epoch, CONFIG.EPOCHS):
@@ -116,58 +133,57 @@ def train():
             x, y = x.to(device), y.to(device)
 
             optimizer.zero_grad()
-            outputs = model(x)
-            loss = criterion(outputs.view(-1, outputs.size(-1)), y.view(-1))
-            loss.backward()
 
-            total_norm = 0.0
-            for p in model.parameters():
-                if p.grad is not None:
-                    param_norm = p.grad.data.norm(2)
-                    total_norm += param_norm.item() ** 2
-            total_norm = total_norm ** 0.5
+            # ---------- Forward + Loss (AMP autocast) ----------
+            with autocast(enabled=CONFIG.USE_AMP):
+                outputs = model(x)
+                loss = criterion(outputs.view(-1, outputs.size(-1)), y.view(-1))
 
-            torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
+            # ---------- Backward (scaled for AMP) ----------
+            scaled_loss = scaler.scale(loss)
+            assert isinstance(scaled_loss, torch.Tensor)
+            scaled_loss.backward()
 
-            optimizer.step()
+            # Unscale before grad norm + clip so the norm is in true fp32 scale
+            scaler.unscale_(optimizer)
+
+            total_norm = torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
+
+            scaler.step(optimizer)
+            scaler.update()
             scheduler.step()
 
             global_step += 1
             total_loss += loss.item()
 
-            # Checkpoint
+            # ---------- Step Checkpoint ----------
             if global_step % CONFIG.SAVE_EVERY == 0:
                 checkpoint_path = os.path.join(checkpoint_dir, f"gpt1_step_{global_step}.pt")
-                torch.save({
+                ckpt_data = {
                     "step": global_step,
                     "epoch": epoch,
                     "model_state_dict": model.state_dict(),
                     "optimizer_state_dict": optimizer.state_dict(),
                     "scheduler_state_dict": scheduler.state_dict(),
+                    "scaler_state_dict": scaler.state_dict(),
                     "loss": loss.item(),
-                }, checkpoint_path)
-
-                # Save as latest checkpoint for automatic resume
-                torch.save({
-                    "step": global_step,
-                    "epoch": epoch,
-                    "model_state_dict": model.state_dict(),
-                    "optimizer_state_dict": optimizer.state_dict(),
-                    "scheduler_state_dict": scheduler.state_dict(),
-                    "loss": loss.item(),
-                }, latest_ckpt)
-
+                    "best_val_loss": best_val_loss,
+                }
+                torch.save(ckpt_data, checkpoint_path)
+                torch.save(ckpt_data, latest_ckpt)  # Always keep latest for resume
+                rotate_step_checkpoints(step_ckpt_paths, checkpoint_path)
                 wandb.save(checkpoint_path)
                 print(f"Checkpoint saved at step {global_step}")
 
-            # Log every 50 batches
+            # ---------- Batch Logging ----------
             if batch_idx % 50 == 0:
                 print(f"Epoch {epoch+1}, Batch {batch_idx}, Loss: {loss.item():.4f}, Grad Norm: {total_norm:.6f}")
-                # W&B logging
+                
                 wandb.log({
                     "batch_loss": loss.item(),
                     "lr": scheduler.get_last_lr()[0],
-                    "step": global_step
+                    "grad_norm": total_norm,
+                    "step": global_step,
                 })
 
         avg_train_loss = total_loss / len(train_loader)
@@ -188,26 +204,27 @@ def train():
         print(f"Epoch {epoch} | Avg Val Loss: {avg_val_loss:.4f}")
         wandb.log({"val_loss": avg_val_loss, "epoch": epoch})
 
-        # Save checkpoint at the end of each epoch
+        # ---------- Save checkpoint at the end of each epoch ----------
         epoch_checkpoint_path = os.path.join(checkpoint_dir, f"gpt1_epoch_{epoch+1}.pt")
-        torch.save({
+        epoch_ckpt_data = {
             "step": global_step,
             "epoch": epoch,
             "model_state_dict": model.state_dict(),
             "optimizer_state_dict": optimizer.state_dict(),
             "scheduler_state_dict": scheduler.state_dict(),
-            "loss": avg_val_loss,  # Using validation loss for epoch checkpoint
-        }, epoch_checkpoint_path)
-        torch.save({
-            "step": global_step,
-            "epoch": epoch,
-            "model_state_dict": model.state_dict(),
-            "optimizer_state_dict": optimizer.state_dict(),
-            "scheduler_state_dict": scheduler.state_dict(),
+            "scaler_state_dict": scaler.state_dict(),
             "loss": avg_val_loss,
-        }, latest_ckpt)
+            "best_val_loss": best_val_loss,
+        }
+        torch.save(epoch_ckpt_data, epoch_checkpoint_path)
+        torch.save(epoch_ckpt_data, latest_ckpt)
         wandb.save(epoch_checkpoint_path)
-        print(f"Checkpoint saved at end of Epoch {epoch+1} to {epoch_checkpoint_path}")
+        print(f"Epoch checkpoint saved: {epoch_checkpoint_path}")
+
+        # ---------- Best Model ----------
+        if avg_val_loss < best_val_loss:
+            torch.save(epoch_ckpt_data, best_ckpt)
+            print(f"   ✅ New best model saved (val_loss={avg_val_loss:.4f})") 
 
         # Early 
         # If no meaningful improvement in the val_loss after 3 consecutive epoch, we terminate.

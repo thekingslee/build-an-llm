@@ -9,17 +9,27 @@ import random
 from tqdm import tqdm
 
 class GPTDataset(Dataset):
-    def __init__(self, tokens, seq_len):
+    def __init__(self, tokens, seq_len, stride: int = 1):
+        """
+        Args:
+            tokens:   flat list of token IDs
+            seq_len:  length of each training window
+            stride:   how far the window advances between examples.
+                      stride=1  → full sliding window (every position, max overlap)
+                      stride=seq_len → non-overlapping chunks (modern practice for large datasets)
+        """
         self.data = torch.tensor(tokens)
         self.seq_len = seq_len
+        self.stride = stride
 
     def __len__(self):
-        # Ensure we return at least 0, even if we don't have enough tokens
-        return max(0, len(self.data) - self.seq_len)
+        # Number of valid starting positions given the stride
+        return max(0, (len(self.data) - self.seq_len) // self.stride)
 
     def __getitem__(self, idx):
-        x = self.data[idx:idx+self.seq_len]
-        y = self.data[idx+1:idx+self.seq_len+1]
+        start = idx * self.stride
+        x = self.data[start : start + self.seq_len]
+        y = self.data[start + 1 : start + self.seq_len + 1]
         return x, y
 
 def load_local_corpus_data(data_dir):
@@ -87,10 +97,10 @@ def load_tokens(tokenizer, train_split=0.8, val_split=0.1):
 
 
 
-    # ------------------- Get Saved Datasets from HuggingFace -------------------
+    # ------------------- Get Saved Datasets from Storage -------------------
     try:
         train_tokens, val_tokens, test_tokens = load_tokens_from_drive(dataset_name)
-        print("✅ Using cached tokenized/split data from Drive")
+        print("✅ Using cached tokenized/split data from Network Volume")
 
         return train_tokens, val_tokens, test_tokens
 
@@ -105,10 +115,10 @@ def load_tokens(tokenizer, train_split=0.8, val_split=0.1):
         all_texts.extend(naijacorpus_texts)
         print(f"✅ Added 9ja-bookcorpus of {len(naijacorpus_texts)} texts from HuggingFace")
 
-    bookcorpus_split_texts = load_huggingface_corpus_data("rojagtap/bookcorpus", split="30%")
-    if bookcorpus_split_texts:
-        all_texts.extend(bookcorpus_split_texts)
-        print(f"✅ Added GPT-1 bookcorpus of {len(bookcorpus_split_texts)} texts from HuggingFace")
+    educorpus_texts = load_huggingface_corpus_data("asharox/fineweb-300k")
+    if educorpus_texts:
+        all_texts.extend(educorpus_texts)
+        print(f"✅ Added fineweb-edu of {len(educorpus_texts)} texts from HuggingFace")
     
     print(f"Total texts loaded: {len(all_texts)}")
 
@@ -204,34 +214,44 @@ def load_tokens(tokenizer, train_split=0.8, val_split=0.1):
 
 def prepare_dataloader(tokens, config, split):
     """
-    Wrap GPTDataset in a DataLoader with validation
+    Wrap GPTDataset in a DataLoader with validation.
+
+    Uses stride=1 (full sliding window) by default, consistent with GPT-1 pretraining.
+    To reduce epoch length on large datasets, set a STRIDE in config (e.g. STRIDE=512
+    gives non-overlapping chunks and ~500x fewer batches per epoch).
     """
     # Validate we have enough tokens
     if len(tokens) < config.SEQ_LEN:
         print(f"⚠️  Warning: Only {len(tokens)} tokens available, but SEQ_LEN={config.SEQ_LEN}")
-        
+
         # For testing purposes, use a smaller sequence length
         effective_seq_len = min(config.SEQ_LEN, max(1, len(tokens) // 2))
         print(f"   Using effective SEQ_LEN={effective_seq_len} for this run")
     else:
         effective_seq_len = config.SEQ_LEN
-    
-    dataset = GPTDataset(tokens, effective_seq_len)
+
+    STRIDE = config.STRIDE
+    dataset = GPTDataset(tokens, effective_seq_len, stride=STRIDE)
 
     # Validate dataset has samples
     if len(dataset) == 0:
         raise ValueError(f"Dataset is empty! Need at least {effective_seq_len + 1} tokens, got {len(tokens)}")
-    
-    print(f"   Created dataset tokens for {split} with {len(dataset)} samples (seq_len={effective_seq_len})")
 
-    # Only shuffle if this is the training split
+    print(f"   Created {split} dataset: {len(dataset):,} samples "
+          f"(seq_len={effective_seq_len}, stride={STRIDE})")
+
+    # Only shuffle and drop incomplete batches for the training split
     is_train = (split.lower() == "train")
-    
+    num_workers = getattr(config, "NUM_WORKERS", 0)
+
     return DataLoader(
         dataset,
         batch_size=config.BATCH_SIZE,
         shuffle=is_train,  # True for train, False for val/test
-        drop_last=True if is_train else False
+        drop_last=True if is_train else False,
+        num_workers=num_workers,
+        pin_memory=getattr(config, "PIN_MEMORY", False),
+        persistent_workers=(num_workers > 0),  # Keep workers alive between epochs
     )
 
 def clean_data(dataset):
