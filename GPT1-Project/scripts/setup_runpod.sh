@@ -58,16 +58,32 @@ fi
 echo "Repo ready at $WORKSPACE  ✅"
 
 # ---------------------------------------------------------------------------
+# 3.5. Install System Utilities (tmux)
+# ---------------------------------------------------------------------------
+echo ""
+echo "============================================================"
+echo " System Utilities"
+echo "============================================================"
+if ! command -v tmux &>/dev/null; then
+    echo "Installing tmux..."
+    apt-get update -y && apt-get install -y tmux
+fi
+echo "tmux installed  ✅"
+
+# ---------------------------------------------------------------------------
 # 4. Install uv + sync dependencies
 # ---------------------------------------------------------------------------
 echo ""
 echo "============================================================"
 echo " Python Dependencies"
 echo "============================================================"
+# Ensure paths are set even if uv was installed in a previous session
+export PATH="$HOME/.cargo/bin:$HOME/.local/bin:$PATH"
+
 if ! command -v uv &>/dev/null; then
     echo "Installing uv..."
     curl -LsSf https://astral.sh/uv/install.sh | sh
-    export PATH="$HOME/.cargo/bin:$PATH"
+    export PATH="$HOME/.cargo/bin:$HOME/.local/bin:$PATH"
 fi
 echo "uv version: $(uv --version)"
 
