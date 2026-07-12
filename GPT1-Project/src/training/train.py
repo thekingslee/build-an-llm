@@ -196,9 +196,10 @@ def train():
         with torch.no_grad():
             for xInput, yTarget in val_loader:
                 xInput, yTarget = xInput.to(device), yTarget.to(device)
-                predictions = model(xInput).view(-1, tokenizer.vocab_size)
-                yTarget = yTarget.view(-1)
-                val_loss += criterion(predictions, yTarget).item()
+                with autocast(enabled=CONFIG.USE_AMP):
+                    predictions = model(xInput).view(-1, tokenizer.vocab_size)
+                    yTarget = yTarget.view(-1)
+                    val_loss += criterion(predictions, yTarget).item()
 
         avg_val_loss = val_loss / len(val_loader)
         print(f"Epoch {epoch} | Avg Val Loss: {avg_val_loss:.4f}")

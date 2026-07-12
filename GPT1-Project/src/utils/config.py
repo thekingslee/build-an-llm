@@ -22,16 +22,16 @@ else:
 @dataclass
 class Config:
     # ---------------- Data & Training ----------------
-    BATCH_SIZE: int   = 256      # GPT-1 original: 64 minibatch size
+    BATCH_SIZE: int   = 128      # Lowered to 128 to fit in A100 40GB without OOM
     SEQ_LEN:    int   = 512      # Context length for training sequences
     STRIDE:     int   = 1        # Sliding window stride. 1 = max overlap, 512 = non-overlapping
     EPOCHS:     int   = 10       # Chinchilla-optimal is ~2 epochs; early stopping fires around epoch 4-7
-    LEARNING_RATE: float = 6e-4  # Originally set at 3e-4. We scaled from 3e-4 by sqrt(4) for batch 256 (linear scaling rule)
+    LEARNING_RATE: float = 4.2e-4  # Adjusted from 6e-4 for batch size 128 (sqrt scaling rule)
 
     # ---------------- Early Stopping ----------------
     TARGET_LOSS:               float = 1.5
     EARLY_STOPPING_PATIENCE:   int   = 3
-    EARLY_STOPPING_MIN_DELTA:  float = 5e-4  # Relaxed from 1e-4: batch 256 produces smoother val curves
+    EARLY_STOPPING_MIN_DELTA:  float = 3e-4  # Adjusted for batch 128 (less smooth than 256, but smoother than 64)
 
     # ------------- Model Architecture -------------
     # FOR A 30M parameter model
