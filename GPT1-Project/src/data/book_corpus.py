@@ -26,8 +26,8 @@ class GPTDataset(Dataset):
         # Number of valid starting positions given the stride
         return max(0, (len(self.data) - self.seq_len) // self.stride)
 
-    def __getitem__(self, idx):
-        start = idx * self.stride
+    def __getitem__(self, index):
+        start = index * self.stride
         x = self.data[start : start + self.seq_len]
         y = self.data[start + 1 : start + self.seq_len + 1]
         return x, y
@@ -67,13 +67,16 @@ def load_local_corpus_data(data_dir):
         print(f"⚠️  Error accessing directory {data_dir}: {e}")
         return []
 
-def load_huggingface_corpus_data(source, split="100%"):
+def load_huggingface_corpus_data(source, name=None, split="100%"):
     """
     Load BookCorpus from HuggingFace
     """
     try:
-        dataset = load_dataset(source, split=f"train[:{split}]")
-        texts = [item['text'] for item in dataset if item['text'].strip()]
+        if name:
+            dataset = load_dataset(source, name, split=f"train[:{split}]")
+        else:
+            dataset = load_dataset(source, split=f"train[:{split}]")
+        texts = [item['text'] for item in dataset if item['text'].strip()]  # type: ignore
         return texts
     except Exception as e:
         print(f"⚠️  Error loading HuggingFace corpus: {e}")
@@ -92,7 +95,7 @@ def load_tokens(tokenizer, train_split=0.8, val_split=0.1):
     """ 
 
 
-    dataset_name = "300token_tokenized_splits.pt"
+    dataset_name = "600k_token_tokenized_splits.pt"
     all_texts = []
 
 
@@ -115,7 +118,7 @@ def load_tokens(tokenizer, train_split=0.8, val_split=0.1):
         all_texts.extend(naijacorpus_texts)
         print(f"✅ Added 9ja-bookcorpus of {len(naijacorpus_texts)} texts from HuggingFace")
 
-    educorpus_texts = load_huggingface_corpus_data("asharox/fineweb-300k")
+    educorpus_texts = load_huggingface_corpus_data("HuggingFaceFW/fineweb-edu", name="sample-10BT", split="6%")
     if educorpus_texts:
         all_texts.extend(educorpus_texts)
         print(f"✅ Added fineweb-edu of {len(educorpus_texts)} texts from HuggingFace")
