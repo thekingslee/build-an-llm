@@ -23,6 +23,9 @@ for _base in (project_root, _repo_root):
 # Import the modular training function
 from src.training.train import train
 
+def main():
+    train()
+
 # Run training
 if __name__ == "__main__":
-    train()
+    main()

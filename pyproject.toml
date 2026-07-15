@@ -36,3 +36,14 @@ explicit = true
 torch = { index = "pytorch-cu121" }
 torchvision = { index = "pytorch-cu121" }
 torchaudio = { index = "pytorch-cu121" }
+
+[build-system]
+requires = ["setuptools>=61.0.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+package-dir = { "" = "GPT1-Project" }
+packages = ["src", "scripts"]
+
+[project.scripts]
+gpt = "scripts.run_training:main"

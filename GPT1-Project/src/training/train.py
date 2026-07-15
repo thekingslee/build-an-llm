@@ -15,7 +15,6 @@ from datetime import datetime
 from src.models.gpt1 import GPT1
 from src.data.book_corpus import load_tokens, prepare_dataloader
 from src.utils.config import CONFIG
-from src.utils.helpers import rotate_step_checkpoints
 
 def train():
     # ------------------- Device -------------------
@@ -121,7 +120,6 @@ def train():
 
     # ----------------- Early Stopping State -----------------
     epochs_without_improvement = 0
-    step_ckpt_paths = []  # Tracks saved step checkpoints for rotation
 
 
     # ------------------- Training Loop -------------------
@@ -155,25 +153,6 @@ def train():
 
             global_step += 1
             total_loss += loss.item()
-
-            # ---------- Step Checkpoint ----------
-            if global_step % CONFIG.SAVE_EVERY == 0:
-                checkpoint_path = os.path.join(checkpoint_dir, f"gpt1_step_{global_step}.pt")
-                ckpt_data = {
-                    "step": global_step,
-                    "epoch": epoch,
-                    "model_state_dict": model.state_dict(),
-                    "optimizer_state_dict": optimizer.state_dict(),
-                    "scheduler_state_dict": scheduler.state_dict(),
-                    "scaler_state_dict": scaler.state_dict(),
-                    "loss": loss.item(),
-                    "best_val_loss": best_val_loss,
-                }
-                torch.save(ckpt_data, checkpoint_path)
-                torch.save(ckpt_data, latest_ckpt)  # Always keep latest for resume
-                rotate_step_checkpoints(step_ckpt_paths, checkpoint_path)
-                wandb.save(checkpoint_path)
-                print(f"Checkpoint saved at step {global_step}")
 
             # ---------- Batch Logging ----------
             if batch_idx % 50 == 0:
