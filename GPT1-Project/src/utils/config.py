@@ -9,8 +9,8 @@ _IS_RUNPOD = os.path.exists("/runpod-volume")
 _IS_COLAB  = os.path.exists("/content/drive")
 
 if _IS_RUNPOD:
-    _CHECKPOINT_DIR = "/runpod-volume/checkpoints"
-    _DATASET_DIR    = "/runpod-volume/datasets"
+    _CHECKPOINT_DIR = "/workspace/build-an-llm/checkpoints"
+    _DATASET_DIR    = "/workspace/build-an-llm/datasets"
 elif _IS_COLAB:
     _CHECKPOINT_DIR = "/content/drive/MyDrive/GPT1_Checkpoints"
     _DATASET_DIR    = "/content/drive/MyDrive/GPT1_Checkpoints/GPT1_Datasets"

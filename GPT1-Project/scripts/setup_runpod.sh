@@ -27,7 +27,7 @@ if [ -n "${WANDB_API_KEY:-}" ]; then
 fi
 
 # Create needed directories silently
-mkdir -p /runpod-volume/checkpoints /runpod-volume/datasets
+mkdir -p "$WORKSPACE/checkpoints" "$WORKSPACE/datasets" "$WORKSPACE/hf_cache" "$WORKSPACE/wandb"
 
 # 3. Install tmux
 if ! command -v tmux &>/dev/null; then
@@ -35,6 +35,6 @@ if ! command -v tmux &>/dev/null; then
 fi
 
 # 4 & 5. Start tmux and run the training
-tmux new-session -d -s training "cd $WORKSPACE && uv run python GPT1-Project/scripts/run_training.py"
+tmux new-session -d -s training "cd $WORKSPACE && export HF_HOME=$WORKSPACE/hf_cache WANDB_DIR=$WORKSPACE/wandb && uv run python GPT1-Project/scripts/run_training.py"
 echo "Setup complete! Training has started in the background."
 echo "To view training progress, run: tmux attach -t training"
