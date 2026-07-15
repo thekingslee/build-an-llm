@@ -118,7 +118,7 @@ def load_tokens(tokenizer, train_split=0.8, val_split=0.1):
         all_texts.extend(naijacorpus_texts)
         print(f"✅ Added 9ja-bookcorpus of {len(naijacorpus_texts)} texts from HuggingFace")
 
-    educorpus_texts = load_huggingface_corpus_data("HuggingFaceFW/fineweb-edu", name="sample-10BT", split="6%")
+    educorpus_texts = load_huggingface_corpus_data("theKingslee/fineweb-600m-tokens")
     if educorpus_texts:
         all_texts.extend(educorpus_texts)
         print(f"✅ Added fineweb-edu of {len(educorpus_texts)} texts from HuggingFace")
