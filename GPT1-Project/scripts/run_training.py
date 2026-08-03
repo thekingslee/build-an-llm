@@ -3,11 +3,11 @@
 import os
 import sys
 
-# 1️⃣ Ensure project root is in sys.path so src modules work
+# Ensure project root is in sys.path so src modules work
 project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, project_root)
 
-# 2️⃣ Activate virtual environment automatically (optional): GPT1-Project/.venv or repo root .venv
+# Activate virtual environment automatically (optional): GPT1-Project/.venv or repo root .venv
 _repo_root = os.path.dirname(project_root)
 _venv_sub = (
     (".venv", "Scripts", "activate_this.py")
@@ -20,9 +20,12 @@ for _base in (project_root, _repo_root):
         exec(open(_venv_path).read(), {"__file__": _venv_path})
         break
 
-# 3️⃣ Import the modular training function
+# Import the modular training function
 from src.training.train import train
 
-# 4️⃣ Run training
-if __name__ == "__main__":
+def main():
     train()
+
+# Run training
+if __name__ == "__main__":
+    main()

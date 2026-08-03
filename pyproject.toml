@@ -16,10 +16,34 @@ dependencies = [
     "pymupdf>=1.24.0",
     "pytesseract>=0.3.10",
     "requests>=2.31.0",
-    "torch>=2.10.0",
+    "torch>=2.1.0",
     "tqdm>=4.67.3",
     "transformers>=5.3.0",
     "wandb>=0.25.1",
     "torchvision",
     "torchaudio",
 ]
+
+[tool.pyright]
+extraPaths = ["GPT1-Project"]
+
+[[tool.uv.index]]
+name = "pytorch-cu121"
+url = "https://download.pytorch.org/whl/cu121"
+explicit = true
+
+[tool.uv.sources]
+torch = { index = "pytorch-cu121" }
+torchvision = { index = "pytorch-cu121" }
+torchaudio = { index = "pytorch-cu121" }
+
+[build-system]
+requires = ["setuptools>=61.0.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+package-dir = { "" = "GPT1-Project" }
+packages = ["src", "scripts"]
+
+[project.scripts]
+gpt = "scripts.run_training:main"
