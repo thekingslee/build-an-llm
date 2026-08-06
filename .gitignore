@@ -31,5 +31,6 @@ wandb/
 
 # Data files (optional - depends if you want to track your dataset)
 /GPT1-Project/data/
+!GPT1-Project/data/sft_data.jsonl
 *.txt
 
