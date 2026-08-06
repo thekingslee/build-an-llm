@@ -12,6 +12,7 @@ from datetime import datetime
 
 from src.models.gpt1 import GPT1
 from src.data.sft_dataset import load_sft_data, prepare_sft_dataloader
+from src.data.hf_sft_loader import load_from_huggingface
 from src.utils.sft_config import SFT_CONFIG
 
 
@@ -36,7 +37,9 @@ def _rotate_checkpoints(paths: list[str], new_path: str, keep: int):
             print(f"   Rotated out: {os.path.basename(oldest)}")
 
 
-def sft_train(cfg=None):
+def sft_train(cfg=None, hf_dataset: str = None, hf_subset: str = None,
+              hf_split: str = "train", max_samples: int = None,
+              column_mapping: dict = None):
     if cfg is None:
         cfg = SFT_CONFIG
 
@@ -52,7 +55,18 @@ def sft_train(cfg=None):
     tokenizer.pad_token = tokenizer.eos_token
 
     # ------------------- Data -------------------
-    all_examples = load_sft_data(cfg.SFT_DATA_PATH)
+    # Priority: HuggingFace dataset arg > local file path in config
+    if hf_dataset:
+        all_examples = load_from_huggingface(
+            dataset_name=hf_dataset,
+            subset=hf_subset,
+            split=hf_split,
+            max_samples=max_samples,
+            column_mapping=column_mapping,
+            save_path=cfg.SFT_DATA_PATH,   # cache to disk after first download
+        )
+    else:
+        all_examples = load_sft_data(cfg.SFT_DATA_PATH)
     random.Random(42).shuffle(all_examples)
 
     split_idx = int(len(all_examples) * (1 - cfg.VAL_SPLIT))
