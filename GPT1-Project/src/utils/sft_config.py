@@ -6,6 +6,11 @@ from src.utils.config import _IS_RUNPOD, _IS_COLAB, _CHECKPOINT_DIR
 
 _SFT_CHECKPOINT_DIR = os.path.join(_CHECKPOINT_DIR, "sft")
 
+# Absolute path to the sample data file — works regardless of working directory
+_SFT_DATA_PATH = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)), "..", "..", "data", "sft_data.jsonl"
+)
+
 
 @dataclass
 class SFTConfig:
@@ -18,7 +23,7 @@ class SFTConfig:
     # -------- SFT dataset --------
     # JSONL or JSON array with {"instruction", "input"?, "output"} per example.
     # Override via --sft-data-path CLI arg in run_sft.py.
-    SFT_DATA_PATH: str = "data/sft_data.jsonl"
+    SFT_DATA_PATH: str = field(default_factory=lambda: _SFT_DATA_PATH)
     VAL_SPLIT: float = 0.1          # fraction held out for validation
 
     # -------- Training --------

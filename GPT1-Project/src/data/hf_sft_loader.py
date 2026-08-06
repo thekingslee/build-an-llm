@@ -9,13 +9,14 @@ from datasets import load_dataset, DatasetDict, Dataset
 from typing import Optional
 import json
 import os
+import random
 
 # ---------------------------------------------------------------------------
 # Known column aliases — add more as you encounter new datasets
 # ---------------------------------------------------------------------------
 _INSTRUCTION_ALIASES = [
-    "instruction", "prompt", "question", "query", "input", "system",
-    "human", "user", "context", "task",
+    "instruction", "prompt", "question", "query", "system",
+    "human", "user", "task", "context", "input",  # "input" last — low priority to avoid Alpaca collision
 ]
 _OUTPUT_ALIASES = [
     "output", "response", "answer", "completion", "assistant",
@@ -132,7 +133,11 @@ def load_from_huggingface(
         print(f"  DatasetDict detected — using split '{available[0]}'. "
               f"Available: {available}")
 
-    assert isinstance(raw, Dataset)
+    if not isinstance(raw, Dataset):
+        raise TypeError(
+            f"Expected a Dataset after loading split '{split}', got {type(raw)}. "
+            "Try specifying a split explicitly, e.g. split='train'."
+        )
     columns = raw.column_names
     print(f"  Columns found: {columns}")
 
@@ -166,6 +171,9 @@ def load_from_huggingface(
             skipped += 1
 
     print(f"  Converted: {len(examples)} examples, {skipped} skipped (missing instruction or output)")
+
+    # Shuffle before saving so the cached file matches what's used in training
+    random.Random(42).shuffle(examples)
 
     # Optionally persist to disk so future runs are instant
     if save_path:

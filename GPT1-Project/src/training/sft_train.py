@@ -67,7 +67,7 @@ def sft_train(cfg=None, hf_dataset: str = None, hf_subset: str = None,
         )
     else:
         all_examples = load_sft_data(cfg.SFT_DATA_PATH)
-    random.Random(42).shuffle(all_examples)
+        random.Random(42).shuffle(all_examples)  # HF path shuffles inside loader before saving
 
     split_idx = int(len(all_examples) * (1 - cfg.VAL_SPLIT))
     train_examples = all_examples[:split_idx]
