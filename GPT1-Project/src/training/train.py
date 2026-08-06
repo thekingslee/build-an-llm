@@ -3,7 +3,7 @@
 import torch
 from torch import nn
 from torch.utils.data import DataLoader
-from torch.cuda.amp import GradScaler, autocast
+from torch.amp import GradScaler, autocast
 from transformers import get_cosine_schedule_with_warmup, GPT2Tokenizer
 import wandb
 import tqdm
@@ -71,6 +71,7 @@ def train():
     if wandb.run is not None:
         wandb.finish()
 
+    wandb.login(anonymous="allow")
     wandb.init(
         project="30M-GPT1-Model",
         name=f"30m_gpt1_runpod_{datetime.now()}",
@@ -98,7 +99,7 @@ def train():
     # ----------------- AMP Scaler -----------------
     # GradScaler keeps fp16 gradients from underflowing during backward.
     # It's a no-op when USE_AMP=False (enabled=False), so no conditional logic needed below.
-    scaler = GradScaler(enabled=CONFIG.USE_AMP)
+    scaler = GradScaler(device=device, enabled=CONFIG.USE_AMP and device == "cuda")
 
     # ----------------- Resume from checkpoint if exists -----------------
     global_step = 0
@@ -133,7 +134,7 @@ def train():
             optimizer.zero_grad()
 
             # ---------- Forward + Loss (AMP autocast) ----------
-            with autocast(enabled=CONFIG.USE_AMP):
+            with autocast(device_type=device if device != "mps" else "cpu", enabled=CONFIG.USE_AMP and device == "cuda"):
                 outputs = model(x)
                 loss = criterion(outputs.view(-1, outputs.size(-1)), y.view(-1))
 
@@ -175,7 +176,7 @@ def train():
         with torch.no_grad():
             for xInput, yTarget in val_loader:
                 xInput, yTarget = xInput.to(device), yTarget.to(device)
-                with autocast(enabled=CONFIG.USE_AMP):
+                with autocast(device_type=device if device != "mps" else "cpu", enabled=CONFIG.USE_AMP and device == "cuda"):
                     predictions = model(xInput).view(-1, tokenizer.vocab_size)
                     yTarget = yTarget.view(-1)
                     val_loss += criterion(predictions, yTarget).item()
