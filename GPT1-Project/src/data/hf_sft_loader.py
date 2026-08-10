@@ -4,6 +4,16 @@
 # Handles any dataset regardless of column names or structure.
 # Outputs a list of {"instruction", "input", "output"} dicts
 # that feed directly into SFTDataset.
+#
+# Can also be run as a standalone script to prepare datasets ahead of training:
+#
+#   python GPT1-Project/src/data/hf_sft_loader.py \
+#       --dataset tatsu-lab/alpaca \
+#       --save-path GPT1-Project/data/sft_data.jsonl
+#
+#   python GPT1-Project/src/data/hf_sft_loader.py \
+#       --dataset tatsu-lab/alpaca \
+#       --inspect
 
 from datasets import load_dataset, DatasetDict, Dataset
 from typing import Optional
@@ -210,3 +220,90 @@ def inspect_dataset(dataset_name: str, subset: Optional[str] = None, split: str 
             preview = str(val)[:120].replace("\n", " ")
             print(f"  {col}: {preview}")
     print()
+
+
+# ---------------------------------------------------------------------------
+# Standalone CLI — run this file directly to prepare a dataset before training
+#
+# Usage examples:
+#
+#   # Inspect a dataset to see its columns and sample rows
+#   python GPT1-Project/src/data/hf_sft_loader.py --dataset tatsu-lab/alpaca --inspect
+#
+#   # Download and convert a dataset, save to JSONL for later training
+#   python GPT1-Project/src/data/hf_sft_loader.py \
+#       --dataset tatsu-lab/alpaca \
+#       --save-path GPT1-Project/data/sft_data.jsonl
+#
+#   # Limit samples and override column mapping
+#   python GPT1-Project/src/data/hf_sft_loader.py \
+#       --dataset my-org/my-dataset \
+#       --max-samples 5000 \
+#       --column-mapping '{"instruction":"prompt","output":"completion"}' \
+#       --save-path GPT1-Project/data/sft_data.jsonl
+# ---------------------------------------------------------------------------
+if __name__ == "__main__":
+    import argparse
+    import sys
+
+    parser = argparse.ArgumentParser(
+        description="Prepare a HuggingFace dataset as a local JSONL file for SFT training."
+    )
+    parser.add_argument(
+        "--dataset", required=True,
+        help="HuggingFace dataset name, e.g. 'tatsu-lab/alpaca'",
+    )
+    parser.add_argument(
+        "--subset", default=None,
+        help="Dataset config/subset name if required.",
+    )
+    parser.add_argument(
+        "--split", default="train",
+        help="Which split to use. Supports slice notation e.g. 'train[:5000]'. Default: train",
+    )
+    parser.add_argument(
+        "--max-samples", type=int, default=None,
+        help="Cap the number of examples to download.",
+    )
+    parser.add_argument(
+        "--column-mapping", default=None,
+        help='Manual column mapping as JSON e.g. \'{"instruction":"prompt","output":"completion"}\'. '
+             "Only needed when auto-detection fails.",
+    )
+    parser.add_argument(
+        "--save-path", default=None,
+        help="Output JSONL path, e.g. GPT1-Project/data/sft_data.jsonl. "
+             "If omitted, examples are printed to stdout but not saved.",
+    )
+    parser.add_argument(
+        "--inspect", action="store_true",
+        help="Print column names and 3 sample rows, then exit. No data is saved.",
+    )
+    parser.add_argument(
+        "--inspect-n", type=int, default=3,
+        help="Number of sample rows to print with --inspect. Default: 3",
+    )
+
+    args = parser.parse_args()
+
+    col_map = json.loads(args.column_mapping) if args.column_mapping else None
+
+    if args.inspect:
+        inspect_dataset(args.dataset, subset=args.subset, split=args.split, n=args.inspect_n)
+        sys.exit(0)
+
+    examples = load_from_huggingface(
+        dataset_name=args.dataset,
+        subset=args.subset,
+        split=args.split,
+        max_samples=args.max_samples,
+        column_mapping=col_map,
+        save_path=args.save_path,
+    )
+
+    if not args.save_path:
+        print(f"\nNo --save-path given. Printing first 3 converted examples:\n")
+        for ex in examples[:3]:
+            print(json.dumps(ex, ensure_ascii=False, indent=2))
+        print(f"\nTotal: {len(examples)} examples. Pass --save-path to write to disk.")
+
