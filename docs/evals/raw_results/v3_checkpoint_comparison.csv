@@ -1,0 +1,375 @@
+checkpoint,prompt,response,analysis
+best_model.pt,How are you?,"How are you?
+- If you are taking care of your home, how are you getting treated?
+- How much food is needed in your home?
+- How much food should you eat?
+- What should I eat?
+Which of the following?
+- What is the difference in food we eat?
+- How do we get used to it all?
+- What is the difference between the two?
+- What is the difference in food consumption?
+- What is the difference in food consumption?
+- What is the difference between the two?
+- Where is food from?
+","TTR=0.43, max_bigram_repeat=5 -> repetitive loops"
+best_model.pt,The capital of France is,"The capital of France is located in the capital of France. It is also the capital of France.
+The Republic of France has an entire body of information - the whole body of information).
+The Republic of France is a capital of France. It covers the entire body of information, the territory of the country and the region of France.
+The Republic of France covers the whole body of information, the territory of the country and the country of France. It also covers the whole body of information.
+The capital is located in France.
+The Republic of France is a republic and the Kingdom of France.
+The Republic","TTR=0.23, max_bigram_repeat=10 -> low lexical diversity, repetitive loops"
+best_model.pt,"Once upon a time,","Once upon a time, the city of Pompeii was the largest city of Pompeii, but still stands now and the city of Pompeii.
+The city of Pompeii stands in two cities: the ancient city of Pompeii and the city of the city of Rome is the capital. In the south, Pompeii stands in the former capital of the Roman Empire.
+This city has a large, complex and complex structure, including the ancient city of the city, which is surrounded by a narrow mountain and is surrounded by a narrow valley with a large valley.
+The city of Pompeii is located in the southern part","TTR=0.39, max_bigram_repeat=9 -> low lexical diversity, repetitive loops"
+best_model.pt,Explain photosynthesis in simple terms.,"Explain photosynthesis in simple terms.
+How do we know where it is and how it’s formed?
+How will we know what the water is?
+When it comes to finding the right water to go through, it’s important to know how it works.
+There’s a simple analogy to know where the water is and what is the water it is.
+What is the water that it travels?
+The water that flows through the water is referred to as the water. The water that flows through the water will flow through the water and then it must flow through the water to get through it","TTR=0.36, max_bigram_repeat=11 -> low lexical diversity, repetitive loops"
+best_model.pt,Write a short poem about the rain.,"Write a short poem about the rain.
+If you want to know the difference between two or more words, you should find the correct way to say.
+There are two ways of referring to a poem:
+1. To use words.
+2. To use words.
+3. To use words.
+As you can see, the words are not very much of a sentence.
+Here are some common words to use on your computer:
+* If you can't see it, then you should use them to count all the words you mean
+* If you can't see it, and you can do it, you","TTR=0.53, max_bigram_repeat=4 -> repetitive loops"
+latest_checkpoint.pt,How are you?,"How are you?
+- What can you do to make the most up-to-date measurements?
+- What is your time when you could work on?
+- What are you interested in?
+- What type of data can you make?
+- What is your time or time when you need to make measurements
+- What is your time and time when you need to make measurements
+- What is your time?
+- How to make the most of your time?
+- What are your periods in time when you need to make the most of your time?
+- What are your schedules?
+","TTR=0.34, max_bigram_repeat=6 -> low lexical diversity, repetitive loops"
+latest_checkpoint.pt,The capital of France is,"The capital of France is the third largest city of Paris, the capital of Paris, and the largest cities of Paris. The city lies the capital of Paris in the form of beautiful landscapes and monuments.
+The city has a great history and has been influenced by various theories of the French. In the 1920s the French and French cities were created that included a very small town.
+The French cities of Paris have been divided into two different zones (e.g., the capital city of Paris, and the city of Paris). The city is divided into two zones: the city of the city of Paris and the city of","TTR=0.40, max_bigram_repeat=8 -> repetitive loops"
+latest_checkpoint.pt,"Once upon a time,","Once upon a time, each moment is connected to its own state to a particular state. While the concept of ""state"" is not clearly understood by the state, it is certainly not possible to explain a state or state to a state, which is not necessarily true to other state.
+The state, if any, state is one of the four states that it should be. State has a natural state, but each state must be different from that state. State should be a state, which is not a state, that is not an individual and that is the most fundamental thing to know. State can be a state and","TTR=0.47, max_bigram_repeat=5 -> repetitive loops"
+latest_checkpoint.pt,Explain photosynthesis in simple terms.,"Explain photosynthesis in simple terms.
+- The carbon cycle is the process that is the process of living cells that are unable to grow and reproduce.
+- The plant converts the carbon into nitrogen into nitrogen, which is converted into nitrogen.
+- The carbon cycle converts the carbon, which is converted to nitrogen and is converted to nitrogen and it begins to decompose.
+- The carbon cycle is the conversion of the carbon into nitrogen into nitrification and the oxygen in oxygen in oxygen.
+- The carbon cycle is the process of living cells that are able to survive without the waste being transported.
+- The carbon cycle converts the","TTR=0.34, max_bigram_repeat=8 -> low lexical diversity, repetitive loops"
+latest_checkpoint.pt,Write a short poem about the rain.,"Write a short poem about the rain. In this novel he draws the reader to the reader's point of view (though this is not ""just one of his main points""), which is important to the reader.
+The poem comes from the story of the sun and the wind is, of its nature, in its own words, a place of light or sound, in our universe, its natural and natural history.
+A poem is a poem, as follows:
+And a poet is a poet in the poem. From this one,
+And a poem, in its own words, and in tune with the poem.
+It is","TTR=0.49, max_bigram_repeat=3 -> reads as varied, non-repetitive text"
+gpt1_epoch_10.pt,How are you?,"How are you?
+- What are you doing to control?
+- What do you do to make the decision?
+- What do you do to be treated?
+- What are the goals?
+- What are your goals?
+- What are you doing to achieve?
+- What are you doing to help?
+- What are you doing to take control over?
+- How are you doing to improve your goals?
+- What are your goals?
+- What is your plans?
+- Did you know your goals are right for you?
+- What are your goals?
+- You","TTR=0.33, max_bigram_repeat=8 -> low lexical diversity, repetitive loops"
+gpt1_epoch_10.pt,The capital of France is,"The capital of France is the largest city in Belgium, with a total area of around 13,000 sq km.
+The capital is a city in Belgium, bordering the Carpetstein Province, and it borders the Republic of Bordeaux, France. Its name is also spelled as Oceana, which means ""Bishop of the town of the town"".
+The town consists of two smaller cities: the ""crowd"" and the ""hot"". The 'torice' is separated by its width and length, which is a large city with a circumference of 1.5 m. The town consists of","TTR=0.58, max_bigram_repeat=4 -> repetitive loops"
+gpt1_epoch_10.pt,"Once upon a time,","Once upon a time, the number of women who are subjected to a particular health condition has declined from 8.5 million in 2015 to the 2014 death rate by about 11% for people with diabetes in the UK.
+The condition is known as “metabolic syndrome”, which means that it’s not always an actual condition that affects millions of people who have been diagnosed with diabetes. The condition also can take a toll on health and help you cope to recover from diabetes.
+There are many more health conditions that are being treated by physicians to support diabetes prevention. Some people have some of the health conditions","TTR=0.66, max_bigram_repeat=2 -> reads as varied, non-repetitive text"
+gpt1_epoch_10.pt,Explain photosynthesis in simple terms.,"Explain photosynthesis in simple terms.
+5. Which of the following is the basic question: what is the relationship between the two?
+The first three questions are:
+5. What are the reactions and reactions of the first two questions are:
+6. Which of the following is the relationship between the two?
+a. What is the relationship between the two?
+b. What does the two?
+c. Why is the relationship between the two?
+a.What is the relationship between the two?
+the relationship between the two?
+a. What is the relationship between the two?
+b. Who","TTR=0.27, max_bigram_repeat=8 -> low lexical diversity, repetitive loops"
+gpt1_epoch_10.pt,Write a short poem about the rain.,"Write a short poem about the rain.
+What are the best examples of this story?
+The first verse of a flood was made after an earthquake of 1485. In 1831, the Lord called the flood the flood. In 1851, the storm had been set up for the city in the middle of the city. The first two poems that were written by a group of four children, William and Elizabeth, and James and James, and John were written by a group of ten children.
+The first verse, also called the flood, was written by a few young women who were trying to figure out the story. In 18","TTR=0.54, max_bigram_repeat=3 -> reads as varied, non-repetitive text"
+gpt1_epoch_3.pt,How are you?,"How are you?” I asked him if I would tell him what he’s going to be?I’d like to take a look at some of the more interesting things that we can learn here on the way to the world.
+1. It’s a very interesting point to describe the world.
+2. It’s not a good idea where my students know how they are thinking about the world.
+3. It didn’t happen.
+4. It may be a good idea for me to say what these people are saying about things like “no","TTR=0.66, max_bigram_repeat=3 -> reads as varied, non-repetitive text"
+gpt1_epoch_3.pt,The capital of France is,"The capital of France is the city of the city of La Réunion. On the other hand, the city of La Réunion is one of the most important in the country of France. It is therefore the center of the province of the city of the French capital. The city of La Réunion has a large population of about one million inhabitants. The city of La Réunion is the capital of the city of La Réunion. The town of La Réunion is the capital of La Réunion. It is part of the city of La Réunion as a city of La Réunion and the city of La Réunion","TTR=0.29, max_bigram_repeat=10 -> low lexical diversity, repetitive loops"
+gpt1_epoch_3.pt,"Once upon a time,","Once upon a time, the best part of this research will be to explore how we might work on the more recent data that we will use to provide more information to help us.”
+The results of our research also offer additional data for all aspects of how we approach our data and how we can use tools to improve our knowledge base on how we can use data on the world, and why we have a robust tool in the way we make an informed decision making and decision on what we use.
+To explore the world of data science, the study is a process that can be used to determine whether a data is","TTR=0.54, max_bigram_repeat=4 -> repetitive loops"
+gpt1_epoch_3.pt,Explain photosynthesis in simple terms.,"Explain photosynthesis in simple terms.
+“What does the world look like?” They say, “that is a very large and very large part of the world we live in.”
+That makes sense to say, “No.”
+“In other words, no.”
+The first thing in the world is that it is so very dense that the sun has no sun.
+“How do we live in the world?”
+According to the article“The science of solar panels is that, and we think it’s a way for the sun","TTR=0.54, max_bigram_repeat=4 -> repetitive loops"
+gpt1_epoch_3.pt,Write a short poem about the rain.,"Write a short poem about the rain. There have been a lot of poetry written by the poet. They are written in a poem that is very interesting. It is very important to understand that the poem is so much about the poem. It is a very important topic that the poem is a good source of poetry. It is the best and most beautiful way to express it. It is important to understand the poem as we have learnt the poem.
+The poem is a poem that provides the opportunity to write poems, poems, and poems. The poem can contain some of the poems that are in the form of poems but they are also a","TTR=0.44, max_bigram_repeat=7 -> repetitive loops"
+gpt1_epoch_1.pt,How are you?,"How are you?
+- What is the difference between the two elements?
+- The same element to the two elements
+- The other element, the three elements are the same element.
+- It is the one element, the one element.
+- The opposite element is the same element from the one element.
+- The second element is the same element as the two elements.
+The two elements is a polygon, one that is the opposite element.
+When the two elements are made, the two elements are the opposite element.
+- The other element is the opposite element.
+- The third","TTR=0.28, max_bigram_repeat=6 -> low lexical diversity, repetitive loops"
+gpt1_epoch_1.pt,The capital of France is,"The capital of France is the capital of the Republic of Armenia.
+The capital of the Republic of the Republic of the Republic of the Republic of the Republic of the Republic of the Republic is the capital of the Republic of the Republic of the Republic, and the capital.
+The capital of the Republic is part of the Republic of the province of the Republic of the Republic of the Republic of the Republic of the Republic of the Republic of the Republic.
+The Republic of the Republic of the Republic of the Republic of the Republic is the capital of the Republic of the Republic of the Republic of the Republic of the Republic of the","TTR=0.08, max_bigram_repeat=31 -> low lexical diversity, repetitive loops"
+gpt1_epoch_1.pt,"Once upon a time,","Once upon a time, a new study may be the best time to find out what is going on.
+In the past half, the study found that the amount of time required to be taken from about 17 to 30 years ago, and that the growth rate would depend on the number of times. The researchers also found that the amount of time spent on the day spent on the daily hours of the month, during the study did not get the same record, but the amount of time required to be taken (e.g. in the calendar year after year’s day-by-day). This, however,","TTR=0.57, max_bigram_repeat=3 -> reads as varied, non-repetitive text"
+gpt1_epoch_1.pt,Explain photosynthesis in simple terms.,"Explain photosynthesis in simple terms.
+- Plant in this type of plant, leaf growth, and soil at least one plant.
+- plant in the plant for growth in a plant in a well-purified manner.
+- plant in a plant.
+- plant in a plant in the plant in a plant.
+- plant in a plant in a well-purifier.
+- plant in a plant.
+- plant in a plant in a plant.
+- plant in a plant on a plant.
+- plant in a few days after flowering.
+- plant in a particular room.
+- plant in","TTR=0.32, max_bigram_repeat=16 -> low lexical diversity, repetitive loops"
+gpt1_epoch_1.pt,Write a short poem about the rain.,"Write a short poem about the rain. The main idea is to create a poem with a long poem. The poem is about the different type of poetry. The poem is for the most of what we are talking about is the poem and for your own, and with the first person, an angel or a few words. The poem is a poem about the poem.
+If you think about the poet you’ve read our book, you should also know that it is good for the poem. The best thing to know is that most of the poems you’ll have to know is that the poem has very different, and that","TTR=0.49, max_bigram_repeat=7 -> repetitive loops"
+gpt1_epoch_6.pt,How are you?,"How are you?
+- How will I get from a plant in your home for a long period of time?
+- How will I get from my home?
+- What will I get from my home?
+- How will I get from my home?
+- How will I get from my home?
+- How will I get from my home?
+- What will my house look like?
+- What will I get from my home?
+- What is my home?
+- What is my home?
+- What will I find as you get from my home?
+- What is the","TTR=0.29, max_bigram_repeat=9 -> low lexical diversity, repetitive loops"
+gpt1_epoch_6.pt,The capital of France is,"The capital of France is the second half of the Republic, which is the name of Henry VIII, the first.
+France also occupies Belgium, the Netherlands, the Netherlands, and the Netherlands. France, the Netherlands, the Netherlands, the Netherlands, and the Netherlands. France, the Dutch, the Netherlands, the Netherlands, the Netherlands, the Netherlands, the Netherlands, the Netherlands, the Netherlands, the Netherlands, the Netherlands, the Netherlands and the Netherlands.
+The Netherlands and the Netherlands
+The Great War is the conflict between the monarchy and its monarchs, which is a great way for the nation. The Great War","TTR=0.32, max_bigram_repeat=20 -> low lexical diversity, repetitive loops"
+gpt1_epoch_6.pt,"Once upon a time,","Once upon a time, there was no time to take the matter.” They thought that the world would be full of the elements.
+So where does this happen? That’s an idea of how the universe evolves and develops. It can be used to describe the universe with many things, from its beginnings to the creation of the universe.
+But what it does? That’s a question that is going on inside the universe. The question is “why are we supposed to change?”
+Well that’s a question that’s not a question of how many times the","TTR=0.61, max_bigram_repeat=4 -> repetitive loops"
+gpt1_epoch_6.pt,Explain photosynthesis in simple terms.,"Explain photosynthesis in simple terms. These are the cells of the plant that produce the desired proteins.
+- The first step of this process is called the plant. The plants with no need to produce the desired protein. These are the genes that produce the desired proteins.
+- The first step in the process of converting a plant to a new protein.
+- A tree is a plant.
+- The tree is a plant that is a plant made of a plant whose leaves or stems are pressed into oil.
+- There are five genes that are found in the plant.
+- The tree has three genes.
+- The","TTR=0.42, max_bigram_repeat=5 -> repetitive loops"
+gpt1_epoch_6.pt,Write a short poem about the rain.,"Write a short poem about the rain.
+The poem tells the reader that the rain is a very large bird.
+The poem starts with the beginning of the poem.
+The poem tells the story of the storm that day.
+The poem says that the city of Wales was a great town, and it tells the story of the floods that caused the floods and the flood to the trees which caused the floods.
+The words of the poet, who is known as the poet, say, are often the ones who have survived the flood.
+The poem ends with the word “a” and “a”.","TTR=0.47, max_bigram_repeat=6 -> repetitive loops"
+gpt1_epoch_2.pt,How are you?,"How are you?
+- What are the best choices for you?
+- What are the best choices for you?
+- Can you determine who?
+- Which people you do for you?
+- What are the best choices for you?
+- How do you make a good choice for you?
+- How do you know your values?
+- What is the best choice for you?
+- What are the most good choices for you?
+- How can you do more your work?
+- How are you good choices for you?
+- How do you know what you do with your choices","TTR=0.31, max_bigram_repeat=8 -> low lexical diversity, repetitive loops"
+gpt1_epoch_2.pt,The capital of France is,"The capital of France is at the heart of a world that is well known for its long history.
+The main name given to the city was the Portuguese in 1848, when Saint Peter died in 1821. The first name is Lillian, who was born on the 19th century to the town of Claville. In 1822, Saint Peter was born on the west of Saint Peter, which was known as the “The Lord of Gugavus,” and was buried in the city of Claville on the east.
+In 1821, Saint Peter was born on a rocky island","TTR=0.52, max_bigram_repeat=4 -> repetitive loops"
+gpt1_epoch_2.pt,"Once upon a time,","Once upon a time, the U.S. government is also struggling to reduce the risk of heart attacks.
+A recent study, from the University of Washington, reported that a new study of the American Heart Association found that one in three people with heart attacks was found to have a high risk of heart attacks.
+The study, led by a team of researchers, was of a kind, and the study's most recent discovery. Scientists from the University of Washington, who reported that people with heart attacks were less likely to be more likely to have heart attacks, and the researchers concluded.
+The researchers speculate they had a","TTR=0.51, max_bigram_repeat=5 -> repetitive loops"
+gpt1_epoch_2.pt,Explain photosynthesis in simple terms.,"Explain photosynthesis in simple terms.
+The study of the human genome looks to be the first step in predicting what’s happening in the brain.
+""The findings from the study of human cells is a major step forward in the evolution of brain chemistry,"" said Dr. Tom Wong, a professor of biological and cellular biology at Duke University. ""The first step is to do this, in the ability of the brain to produce a sequence of protein, a sequence of proteins called amino acid, which is necessary to carry out the synthesis of the cell.
+""Once an organism has been able to sequence, it can process the","TTR=0.61, max_bigram_repeat=3 -> reads as varied, non-repetitive text"
+gpt1_epoch_2.pt,Write a short poem about the rain.,"Write a short poem about the rain. The poem is based mainly on this poem's history, which was written by an old poet and poet.
+This poem is written by the poet and poet, who is believed to be the most influential poet’s poem. He is called an “a poem” and is said to be the most outstanding poet.
+Hedocha is a poem of the same name that comes from a period of time. The poem is about the same time, when a storyteller is said to be the first person to appear, in a poem in all the way. The poem is","TTR=0.48, max_bigram_repeat=4 -> repetitive loops"
+gpt1_epoch_5.pt,How are you?,"How are you? (or why?)
+You have no knowledge of what is a good thing but an excellent method to do something. The following way:
+- a test for how many times a day can be done. Some things are simple: you can say, ""Well, what?""
+- a test that includes only a short, long piece of one, four hours a week. Your answer is so good for the rest of your life.""
+- a test that is very effective if you don't want to put it in a short time. You can have any questions about where the test is,","TTR=0.68, max_bigram_repeat=3 -> reads as varied, non-repetitive text"
+gpt1_epoch_5.pt,The capital of France is,"The capital of France is the seat of a republic. The constitution of the republic also limits the freedom or equality of the citizen under which the republic of France is formed.
+The republic of a republic is divided by its constitution. The republic of two territories comprises a three sovereign country, namely the Republic of the Republic of the Republic of the Republic. The Republic of the Republic of the Republic of the Republic of the Republic of the Republic of the Republic of the Republic of the Republic of the Republic of the Republic of the Republic of the Republic of the Republic of the Republic of the Republic of the Republic of the Republic of the","TTR=0.24, max_bigram_repeat=26 -> low lexical diversity, repetitive loops"
+gpt1_epoch_5.pt,"Once upon a time,","Once upon a time, this is the only time to have a good idea of what we are talking about. There are some of the reasons for why the government, and the federal government was the chief reason to say.
+One of the most important considerations for this type of government is the need for an accurate account of such a survey. But it also makes sense for the survey as well as the general population of the country.
+There are many possible explanations, which are given by the local government, such as the government of the state. In fact, the government is the most important and vital aspect to a budget.","TTR=0.57, max_bigram_repeat=4 -> repetitive loops"
+gpt1_epoch_5.pt,Explain photosynthesis in simple terms.,"Explain photosynthesis in simple terms.
+- Sarcode of the water cycle.
+- Sarcode of the water cycle.
+- Saturated to water.
+- Sarcode of the water cycle.
+- Siosis of water for water.
+- The process of water-producing cells that are involved in the formation of cytoplasmic cells.
+- Sarcode of the water cycle.
+- Siosis related to the balance of the water cycle.
+- Siosis of the water cycle.
+- Siotic respiration, the ability of the water to survive.
+- Siosis","TTR=0.36, max_bigram_repeat=7 -> low lexical diversity, repetitive loops"
+gpt1_epoch_5.pt,Write a short poem about the rain.,"Write a short poem about the rain. For this poem I have been fascinated by the subject of the poems, and I believe that the poems are the only ones of the nature of the world that were created by the poet named the book of the song. It is also the subject of the poetry which is usually a short poem, and that is the subject of the poem of the poet. It is one of many poets in the poem of the poem of the poets of the poem of the poet of the poet of the poet of the poet of the poet of the poem of the poet of the poet of the poet of the poet of the","TTR=0.33, max_bigram_repeat=21 -> low lexical diversity, repetitive loops"
+gpt1_epoch_9.pt,How are you?,"How are you?
+- Where are you and what do you see?
+- How do you see your dog, and what is it?
+- What do your dog say?
+- What do you mean by “what” them? What do you say?
+- What do you mean by “what” them?
+- What is your dog’s name?
+- Which dog says?
+- What do you call the dog?
+- Where do you say?
+- Where do you do or say?
+- What do you say?
+- Why is it","TTR=0.33, max_bigram_repeat=9 -> low lexical diversity, repetitive loops"
+gpt1_epoch_9.pt,The capital of France is,"The capital of France is the one that the world will be the most. And the first part is the third one that the world will be the most. And the second part is the whole of the world, which will be the largest country that the world will be an empire. It is the fourth country that the world will be a small country, that is the world’s second country. And the second part is the world’s second country.
+The world will be the second country located in the world. The first major cities, the world has a major city. It has a total area of 6","TTR=0.32, max_bigram_repeat=10 -> low lexical diversity, repetitive loops"
+gpt1_epoch_9.pt,"Once upon a time,","Once upon a time, we’d know that the United States was actually starting to use some form of government to protect the public. If you’ve never been to the government, we’d know the law and we’d know that the U.S. was actually the first to do so.
+The United States was the first state to pass laws and laws. The state had a similar ordinance at the time of the Civil War, though these laws were not changed by the state’s own government. So this was a law of all ages. It was only a matter of time","TTR=0.54, max_bigram_repeat=3 -> reads as varied, non-repetitive text"
+gpt1_epoch_9.pt,Explain photosynthesis in simple terms.,"Explain photosynthesis in simple terms.
+- 1 What is an enzyme and what is an oxygen molecule?
+- 1 What is an oxygen molecule?
+- 2 What is an oxygen molecule?
+- 3 What is an oxygen molecule?
+- 3 What is an oxygen molecule?
+- 1 What is an oxygen molecule?
+What is an oxygen molecule?
+What is a oxygen molecule?
+a oxygen molecule is a substance that is oxygenated by a molecule that is oxygenated up by a molecule that is oxygenated by a molecule that is oxygenated by a molecule that is oxygenated by a molecule that is oxygenated","TTR=0.15, max_bigram_repeat=9 -> low lexical diversity, repetitive loops"
+gpt1_epoch_9.pt,Write a short poem about the rain.,"Write a short poem about the rain. And then you can write it out of the poem.
+How to write it out of the poem
+The first lines of the poem are known as:
+I am going to do this a bit like this poem, but it is pretty interesting to know that it’s the kind of poem you’ll do on paper and you know how many times you’ll end up in a poem.
+You’ll be able to write some lines out of the poem. One way to do this is by putting it out of the poem. That’s how it�","TTR=0.48, max_bigram_repeat=5 -> repetitive loops"
+gpt1_epoch_7.pt,How are you?,"How are you?
+You can do a lot of research on the topic of this science. It is a very long effort that makes you think about the various kinds of human and environmental variables. The answer is not as simple as a living thing. There are some things that can be said of when something is wrong.
+What is the best method to do when something is wrong?
+There are several ways to do the job. You can give the most up and you may ask yourself the questions: What does it mean? Why do you think that is what he needs to know about it?
+The easiest way","TTR=0.60, max_bigram_repeat=2 -> reads as varied, non-repetitive text"
+gpt1_epoch_7.pt,The capital of France is,"The capital of France is the French capital. And it was part of the French Constitution of France that became the French capital.
+In the early days of the French government, the French government was the French government. The French government was the ‘New French Government. Its name was the French government, who had left most of its colonies in the 15th century. The French government was the French government official. It is the French government government.
+The French government has a strong influence on the French economy, particularly in the French government. Its main economic activity is the growth of the government but its economic growth is the","TTR=0.38, max_bigram_repeat=14 -> low lexical diversity, repetitive loops"
+gpt1_epoch_7.pt,"Once upon a time,","Once upon a time, we have had a chance to see our future and future.
+If we are not at all in the blink of an eye, we would want to know what we are looking for, but also to see it.
+At our fingertips, the nose
+is an area where the nose is a thick layer of tissue that helps
+turn light into the air.
+It is a form of nasal congestion that leads to the nose.
+A nasal congestion is a respiratory obstruction that usually affects the nose by coughing or sneezing. It is an inflammation of the airway. It is caused by an","TTR=0.58, max_bigram_repeat=4 -> repetitive loops"
+gpt1_epoch_7.pt,Explain photosynthesis in simple terms.,"Explain photosynthesis in simple terms.
+1. Light & Motion
+A color of light depends on the wavelength of light. By contrast, that is measured by wavelength.
+The color of the light is known as the wavelength of light.
+The difference between light and movement is the difference between movement and movement. The difference between gravity and movement is the difference between movement and movement.
+The difference between movement and movement is known as the distance between movement and movement.
+Therefore, the difference between movement and movement has an inverse distance of distances between movements, and the difference between motion and movement.
+The difference between movement and movement","TTR=0.28, max_bigram_repeat=9 -> low lexical diversity, repetitive loops"
+gpt1_epoch_7.pt,Write a short poem about the rain.,"Write a short poem about the rain. When it comes to the rain there is a lot of work. After a little time, I put the weather down to the ground, where I thought I could not see it for at first, but I learned that it seemed to be the rain forest of the rain forest.
+I can see it at the end of the day as “the rain forest” and we think about it. The rain forest is one of the most diverse and most popular. It’s our own way of life. In this case we’re going to be hiking and running out of the rain","TTR=0.57, max_bigram_repeat=6 -> repetitive loops"
+gpt1_epoch_8.pt,How are you?,"How are you?
+- Where do you live?
+- Who are you?
+- Who are your friends?
+- How do you live?
+- Who are you?
+- How do you live?
+- What are the things that can be changed?
+- What is your life?
+- What are your life skills?
+What are you?
+- Do you know where you live?
+- Where do you live?
+- Where do you live?
+What does the definition of your life mean?
+- What do you live?
+- What is your life?
+-","TTR=0.33, max_bigram_repeat=7 -> low lexical diversity, repetitive loops"
+gpt1_epoch_8.pt,The capital of France is,"The capital of France is the port of
+to the city of Paris, one of the largest city in the world. It is the capital of
+the world and is located in the northwest of Europe, in the middle
+of the United States. The port is located in the north part of the country, which is the
+city in the north of the country, and is the capital of the whole of the country.
+The hub of the port
+in France and its surrounding region is the port, which is in its vicinity is divided
+into the city and the city, with an area of
+the city on","TTR=0.36, max_bigram_repeat=9 -> low lexical diversity, repetitive loops"
+gpt1_epoch_8.pt,"Once upon a time,","Once upon a time, he’d had to learn more about the history of the New Testament. In a letter, he was born to a man named Jesus, who was a disciple of Jesus, who was a disciple who, in turn, was baptized in the “Christ of the Lord,” and translated into Greek as the father of the church.
+A person could be identified as a man by the name (or given as the name of God), but in fact, he’d been baptizing to the people “and” but this was often called the “A man�","TTR=0.54, max_bigram_repeat=3 -> reads as varied, non-repetitive text"
+gpt1_epoch_8.pt,Explain photosynthesis in simple terms.,"Explain photosynthesis in simple terms.
+2. It is a chemical process and an active ingredient in the compound.
+3. Water is the primary source of energy in the environment.
+4. It is a chemical process that converts sunlight into energy.
+5. It is an active substance that converts sunlight into energy by burning and burning matter.
+6. It is an important element of the chemical process.
+7. The substance in the form of water is an active substance from the air.
+This substance which is the most abundant substance found in the Earth is energy. It causes burning and chemical substances that are known to","TTR=0.45, max_bigram_repeat=4 -> repetitive loops"
+gpt1_epoch_8.pt,Write a short poem about the rain.,"Write a short poem about the rain. Then on, the word for the song is ""welcome"" and 'out of sight' a sound.
+The word for the song is ""to sing"" and is ""to sing,"" meaning not to sing. Here, we say ""for a melody.""
+You might have heard a lot of them say: ""you might have a song! You're here to be our voice!""
+This is a good example. You probably heard a lot of words from a song while listening to a song while listening to a song. In a more recent study the authors used an alternative study to help","TTR=0.52, max_bigram_repeat=4 -> repetitive loops"
+gpt1_epoch_4.pt,How are you?,"How are you?
+- Using a computer with a computer with a computer, your computer is able to read information over your computer.
+- It can be difficult to easily read and read as a computer.
+- There are many types of computers that are hard to read.
+- They can be hard to read.
+- Sometimes you don’t need a CPU to read.
+- It may be hard to think of all the computer applications as a computer.
+- It’s a hard way to read.
+- It’s something you can write.
+- It can be","TTR=0.48, max_bigram_repeat=5 -> repetitive loops"
+gpt1_epoch_4.pt,The capital of France is,"The capital of France is Leningrad and was not officially founded by the French for over 100 years.
+In 1495, the British had already settled at the age of eight.
+The French was founded by King Charles I after the French had lost the French until it was in the hands of the English government. The French were already known as the Great King for King Charles I that he was elected as the British Prime Minister.
+In 1495, the French had become King Charles II of France.
+In 1799 the French agreed to France, and then the French had become King Charles II.
+In the","TTR=0.47, max_bigram_repeat=8 -> repetitive loops"
+gpt1_epoch_4.pt,"Once upon a time,","Once upon a time, the earth’s windy atmosphere is still a mystery.
+The Earth is a hot part of the atmosphere that plays a role in the climate crisis. The Earth’s climate is the primary source of warmth and heat for the human. The Earth’s atmosphere is a strong fossil record that is now the world’s oldest fossil record.
+In the last century a vast and complex part of the earth is in the oceans to absorb carbon dioxide and air, including all around us. Scientists have studied the carbon dioxide in the atmosphere and found that the carbon dioxide produced from the","TTR=0.50, max_bigram_repeat=5 -> repetitive loops"
+gpt1_epoch_4.pt,Explain photosynthesis in simple terms.,"Explain photosynthesis in simple terms.
+What is chlorophyll?
+The chlorophyll comes from the plants that live in the rainforest, which are mostly terrestrial plants (such as mosses or shrubs) for the leaves of the tree.
+The chlorophyll is the green color of water, a purple, white, and black.
+The chlorophyll is an aromatic plant that is made up of a variety of plants such as shrubs and shrubs.
+The plant consists of the four main types of chlorophyll:
+- Acacia (bark),
+- Oak (c. 7-","TTR=0.60, max_bigram_repeat=3 -> reads as varied, non-repetitive text"
+gpt1_epoch_4.pt,Write a short poem about the rain.,"Write a short poem about the rain. It is an introduction to the poem, and is an excellent time to share our experiences and experiences with other students. We continue to give the poem's purpose in this novel.
+How to Write a Narrative, a poem
+A story
+A poem is a poem that is one of the Seven Years Old and Four Years Old and Five Years Old Years Old and Six Years Old. The words are in the first passage, and the poem tells me the end of the book. A poem is a poem, but it is not a poem.
+It is a poem that appears on the end of","TTR=0.48, max_bigram_repeat=7 -> repetitive loops"
