@@ -21,10 +21,15 @@ class SFTConfig:
     )
 
     # -------- SFT dataset --------
-    # JSONL or JSON array with {"instruction", "input"?, "output"} per example.
-    # Override via --sft-data-path CLI arg in run_sft.py.
-    SFT_DATA_PATH: str = field(default_factory=lambda: _SFT_DATA_PATH)
-    VAL_SPLIT: float = 0.1          # fraction held out for validation
+    # One or more dataset names from src/data/datasets/ registry.
+    # Available: "alpaca", "dolly", "openorca", "local"
+    # Override via --datasets flag in run_sft.py.
+    DATASET_NAMES: list = field(default_factory=lambda: ["local"])
+    # Path to local JSONL/JSON file — only used when "local" is in DATASET_NAMES.
+    LOCAL_DATA_PATH: str = field(default_factory=lambda: _SFT_DATA_PATH)
+    # Cap examples per dataset source — useful when mixing large + small datasets.
+    MAX_SAMPLES_PER_DATASET: int = None
+    VAL_SPLIT: float = 0.1
 
     # -------- Training --------
     # Batch sizes: RunPod 128, Colab 16, local 4
