@@ -1,0 +1,61 @@
+checkpoint,method,accuracy
+gpt1_epoch_2.pt,Perplexity scoring,0.318
+gpt1_epoch_2.pt,Probing (Layer 0),0.42
+gpt1_epoch_2.pt,Probing (Layer 1),0.41
+gpt1_epoch_2.pt,Probing (Layer 2),0.44
+gpt1_epoch_2.pt,Probing (Layer 3),0.37
+gpt1_epoch_3.pt,Perplexity scoring,0.322
+gpt1_epoch_3.pt,Probing (Layer 0),0.34
+gpt1_epoch_3.pt,Probing (Layer 1),0.46
+gpt1_epoch_3.pt,Probing (Layer 2),0.44
+gpt1_epoch_3.pt,Probing (Layer 3),0.41
+gpt1_epoch_4.pt,Perplexity scoring,0.34
+gpt1_epoch_4.pt,Probing (Layer 0),0.41
+gpt1_epoch_4.pt,Probing (Layer 1),0.49
+gpt1_epoch_4.pt,Probing (Layer 2),0.42
+gpt1_epoch_4.pt,Probing (Layer 3),0.38
+gpt1_epoch_5.pt,Perplexity scoring,0.326
+gpt1_epoch_5.pt,Probing (Layer 0),0.4
+gpt1_epoch_5.pt,Probing (Layer 1),0.48
+gpt1_epoch_5.pt,Probing (Layer 2),0.45
+gpt1_epoch_5.pt,Probing (Layer 3),0.4
+gpt1_epoch_6.pt,Perplexity scoring,0.33
+gpt1_epoch_6.pt,Probing (Layer 0),0.39
+gpt1_epoch_6.pt,Probing (Layer 1),0.46
+gpt1_epoch_6.pt,Probing (Layer 2),0.46
+gpt1_epoch_6.pt,Probing (Layer 3),0.4
+gpt1_epoch_7.pt,Perplexity scoring,0.346
+gpt1_epoch_7.pt,Probing (Layer 0),0.39
+gpt1_epoch_7.pt,Probing (Layer 1),0.47
+gpt1_epoch_7.pt,Probing (Layer 2),0.49
+gpt1_epoch_7.pt,Probing (Layer 3),0.44
+gpt1_epoch_8.pt,Perplexity scoring,0.33
+gpt1_epoch_8.pt,Probing (Layer 0),0.43
+gpt1_epoch_8.pt,Probing (Layer 1),0.47
+gpt1_epoch_8.pt,Probing (Layer 2),0.44
+gpt1_epoch_8.pt,Probing (Layer 3),0.39
+gpt1_epoch_9.pt,Perplexity scoring,0.334
+gpt1_epoch_9.pt,Probing (Layer 0),0.4
+gpt1_epoch_9.pt,Probing (Layer 1),0.45
+gpt1_epoch_9.pt,Probing (Layer 2),0.46
+gpt1_epoch_9.pt,Probing (Layer 3),0.42
+gpt1_epoch_10.pt,Perplexity scoring,0.338
+gpt1_epoch_10.pt,Probing (Layer 0),0.39
+gpt1_epoch_10.pt,Probing (Layer 1),0.46
+gpt1_epoch_10.pt,Probing (Layer 2),0.47
+gpt1_epoch_10.pt,Probing (Layer 3),0.43
+latest_checkpoint.pt,Perplexity scoring,0.338
+latest_checkpoint.pt,Probing (Layer 0),0.39
+latest_checkpoint.pt,Probing (Layer 1),0.46
+latest_checkpoint.pt,Probing (Layer 2),0.47
+latest_checkpoint.pt,Probing (Layer 3),0.43
+best_model.pt,Perplexity scoring,0.338
+best_model.pt,Probing (Layer 0),0.39
+best_model.pt,Probing (Layer 1),0.46
+best_model.pt,Probing (Layer 2),0.47
+best_model.pt,Probing (Layer 3),0.43
+gpt1_epoch_1.pt,Perplexity scoring,0.344
+gpt1_epoch_1.pt,Probing (Layer 0),0.4
+gpt1_epoch_1.pt,Probing (Layer 1),0.36
+gpt1_epoch_1.pt,Probing (Layer 2),0.39
+gpt1_epoch_1.pt,Probing (Layer 3),0.37

@@ -36,7 +36,7 @@ python3 pdf_scrape/scrape_local_pdf.py "file's directory/"
 - `GPT1-Project/`
   - `scripts/`
     - `run_training.py`
-  - `scr/`
+  - `src/`
     - `data/`
       - `book_corpus.py`
       - `nigerian_corpus.py`
@@ -47,22 +47,32 @@ python3 pdf_scrape/scrape_local_pdf.py "file's directory/"
     - `utils/`
       - `config.py`
   - `README.md`
+- `docs/`
+  - `evals/`
+    - `README.md` (Evaluation Hub)
+    - `pretraining_report.md` (Pretraining Benchmarks)
+    - `figures/`
+    - `raw_results/`
 - `pdf_scrape/`
   - `scrape_local_pdf.py`
   - `scraped_pdf.py`
   - `notebooks`
 - `web_scrape/`
   - `scrape_webpage.py`
-- pyproject.toml
-- .gitignore
-- uv.lock
+- `pyproject.toml`
+- `.gitignore`
+- `uv.lock`
 - `README.md`
+
+## 📊 Evaluations & Benchmarking
+Detailed performance metrics, loss curves, perplexity scores, and hardware benchmarks are available in the **[Evaluation Hub](docs/evals/README.md)**.
+- 🚀 **[Pretraining Evaluation Report](docs/evals/pretraining_report.md)**: Full analysis of pre-training dynamics on the 9ja-bookcorpus dataset.
 
 ## Model Config
 | Model | Params | n_layer | n_head | n_embd |
 |-------|--------|---------|--------|--------|
 | 30M model | ~30M | 4 | 4 | 256 |
-110M model | ~110M |12|12|768
+| 110M model | ~110M | 12 | 12 | 768 |
 
 ## Project Video Map and Receipts
 - [Project inception](https://x.com/theKingslee/status/2020561221460607079?s=20)
@@ -90,4 +100,4 @@ We welcome contributions! Please follow these steps to contribute:
 
 
 ## Acknowledgements
-- Special thanks to the authors whose works inspired this project, Kingsley Nworie https://thekingslee, Abdullahi Mujaheed Aliyu https://github.com/MLHermit and Ayeni Oluwatosin Olawale https://github.com/AyeniOluwatosinOlawale
+- Special thanks to the authors whose works inspired this project, Kingsley Nworie https://thekingslee.com, Abdullahi Mujaheed Aliyu https://github.com/MLHermit and Ayeni Oluwatosin Olawale https://github.com/AyeniOluwatosinOlawale
