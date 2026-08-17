@@ -33,3 +33,8 @@ wandb/
 /GPT1-Project/data/
 *.txt
 
+# Large data files — keep on HuggingFace/Drive, not in git
+*.parquet
+*.npy
+fineweb_tokens/
+
