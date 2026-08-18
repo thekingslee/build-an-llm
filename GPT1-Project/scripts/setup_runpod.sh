@@ -2,7 +2,7 @@
 set -euo pipefail
 
 REPO_URL="https://github.com/thekingslee/build-an-llm.git"
-REPO_BRANCH="feat/30m-param-model"
+REPO_BRANCH="feat/continued-pretraining"
 WORKSPACE="/workspace/build-an-llm"
 
 # 1. Load github repo
