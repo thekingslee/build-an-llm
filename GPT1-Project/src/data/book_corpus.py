@@ -95,7 +95,7 @@ def load_tokens(tokenizer, train_split=0.8, val_split=0.1):
     """ 
 
 
-    dataset_name = "600k_token_tokenized_splits.pt"
+    dataset_name = "1b_token_tokenized_splits.pt"
     all_texts = []
 
 
