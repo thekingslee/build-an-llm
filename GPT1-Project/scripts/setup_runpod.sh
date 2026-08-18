@@ -8,7 +8,7 @@ WORKSPACE="/workspace/build-an-llm"
 # --- Optional Weights & Biases Configuration ---
 # Paste your W&B API Key below (e.g. WANDB_API_KEY="your_api_key_here")
 # If left blank, you can also uncomment WANDB_MODE="disabled" to turn it off completely.
-export WANDB_API_KEY=""
+export WANDB_API_KEY="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"
 export WANDB_MODE="online" # Set to "disabled" or "offline" if you don't want W&B logging
 
 # 1. Load github repo
@@ -41,6 +41,6 @@ if ! command -v tmux &>/dev/null; then
 fi
 
 # 4 & 5. Start tmux and run the training
-tmux new-session -d -s training "cd \$WORKSPACE && export HF_HOME=\$WORKSPACE/hf_cache WANDB_DIR=\$WORKSPACE/wandb TMPDIR=\$WORKSPACE/tmp WANDB_API_KEY='$WANDB_API_KEY' WANDB_MODE='$WANDB_MODE' && uv run python GPT1-Project/scripts/run_training.py"
+tmux new-session -d -s training "cd $WORKSPACE && export HF_HOME=$WORKSPACE/hf_cache WANDB_DIR=$WORKSPACE/wandb TMPDIR=$WORKSPACE/tmp WANDB_API_KEY='$WANDB_API_KEY' WANDB_MODE='$WANDB_MODE' && uv run python GPT1-Project/scripts/run_training.py"
 echo "Setup complete! Training has started in the background."
 echo "To view training progress, run: tmux attach -t training"
