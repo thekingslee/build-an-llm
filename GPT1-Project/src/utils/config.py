@@ -25,7 +25,7 @@ class Config:
     BATCH_SIZE: int   = 128 if (_IS_RUNPOD or _IS_COLAB) else 16      # Lowered to 16 locally to prevent MPS OOM (12.27GB buffer error)
     SEQ_LEN:    int   = 512      # Context length for training sequences
     STRIDE:     int   = 320        # ~37% overlap, clearly uneven, 1.6x dataset
-    EPOCHS:     int   = 10       # Chinchilla-optimal is ~2 epochs; early stopping fires around epoch 4-7
+    EPOCHS:     int   = 20       # Chinchilla-optimal is ~2 epochs; early stopping fires around epoch 4-7
     LEARNING_RATE: float = 4.2e-4  # Adjusted from 6e-4 for batch size 128 (sqrt scaling rule)
 
     # ---------------- Early Stopping ----------------
