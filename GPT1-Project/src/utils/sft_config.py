@@ -21,7 +21,7 @@ class SFTConfig:
         default_factory=lambda: [
             "sentiment",
             "extraction",
-            # "formatting",
+            "formatting",
             # "conversation",
             # "summarization",
         ]
