@@ -49,6 +49,7 @@ def parse_args():
         help="Path to pretrained best_model.pt.",
     )
     parser.add_argument("--epochs", type=int,   default=None)
+    parser.add_argument("--batch-size", type=int, default=None, help="Batch size for training and evaluation.")
     parser.add_argument("--lr",     type=float, default=None)
     parser.add_argument(
         "--freeze-embeddings",
@@ -71,6 +72,8 @@ def main():
         cfg.MAX_SAMPLES_PER_DATASET = args.max_samples_per_dataset
     if args.pretrained_checkpoint:
         cfg.PRETRAINED_CHECKPOINT = args.pretrained_checkpoint
+    if args.batch_size is not None:
+        cfg.BATCH_SIZE = args.batch_size
     if args.epochs is not None:
         cfg.EPOCHS = args.epochs
     if args.lr is not None:

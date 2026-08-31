@@ -5,7 +5,7 @@ from dataclasses import dataclass, field
 # Environment detection — drives all path decisions automatically.
 # RunPod mounts the Network Volume at /runpod-volume by default.
 # ---------------------------------------------------------------------------
-_IS_RUNPOD = os.path.exists("/runpod-volume")
+_IS_RUNPOD = os.path.exists("/runpod-volume") or "RUNPOD_POD_ID" in os.environ or os.path.exists("/workspace")
 _IS_COLAB  = os.path.exists("/content/drive")
 
 if _IS_RUNPOD:

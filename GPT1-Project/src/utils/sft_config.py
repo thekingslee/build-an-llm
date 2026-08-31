@@ -32,13 +32,9 @@ class SFTConfig:
     TEST_SPLIT: float = 0.05
     FILTER_OVERLENGTH: bool = True  # Discard examples exceeding MAX_LEN instead of truncating
 
-    BATCH_SIZE: int = 128 if _IS_RUNPOD else (16 if _IS_COLAB else 4)
+    BATCH_SIZE: int = 128 
     EPOCHS: int = 3
-    LEARNING_RATE: float = (
-        5.7e-5 if _IS_RUNPOD else
-        4e-5   if _IS_COLAB  else
-        2e-5
-    )
+    LEARNING_RATE: float = 5.7e-5
     WARMUP_STEPS: int = 200
     GRAD_CLIP: float = 1.0
 
