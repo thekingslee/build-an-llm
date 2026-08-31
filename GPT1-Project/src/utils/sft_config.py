@@ -21,9 +21,9 @@ class SFTConfig:
         default_factory=lambda: [
             "sentiment",
             "extraction",
-            "formatting",
-            "conversation",
-            "summarization",
+            # "formatting",
+            # "conversation",
+            # "summarization",
         ]
     )
     LOCAL_DATA_PATH: str = field(default_factory=lambda: _SFT_DATA_PATH)
