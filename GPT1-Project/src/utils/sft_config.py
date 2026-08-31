@@ -23,7 +23,7 @@ class SFTConfig:
             "extraction",
             "formatting",
             "conversation",
-            # "summarization",
+            "summarization",
         ]
     )
     LOCAL_DATA_PATH: str = field(default_factory=lambda: _SFT_DATA_PATH)
@@ -35,7 +35,8 @@ class SFTConfig:
     BATCH_SIZE: int = 128 
     EPOCHS: int = 3
     LEARNING_RATE: float = 5.7e-5
-    WARMUP_STEPS: int = 200
+    WARMUP_STEPS: int = 30
+    SAVE_EVERY_STEPS: int = 50
     GRAD_CLIP: float = 1.0
 
     EMBED_SIZE: int = 256

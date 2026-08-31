@@ -1,4 +1,6 @@
 import os
+import re
+import glob
 import random
 import torch
 import wandb
@@ -19,19 +21,24 @@ def _load_pretrained(model: GPT1, checkpoint_path: str, device: str):
             f"Pretrained checkpoint not found: {checkpoint_path}\n"
             "Run pretraining first (scripts/run_training.py) before SFT."
         )
-    ckpt  = torch.load(checkpoint_path, map_location=device, weights_only=True)
+    try:
+        ckpt = torch.load(checkpoint_path, map_location=device, weights_only=True)
+    except Exception:
+        ckpt = torch.load(checkpoint_path, map_location=device, weights_only=False)
     state = ckpt.get("model_state_dict", ckpt)
     model.load_state_dict(state)
     print(f"Loaded pretrained weights from {checkpoint_path}")
 
 
-def _rotate_checkpoints(paths: list[str], new_path: str, keep: int):
-    paths.append(new_path)
-    while len(paths) > keep:
-        oldest = paths.pop(0)
-        if os.path.exists(oldest):
-            os.remove(oldest)
-            print(f"   Rotated out: {os.path.basename(oldest)}")
+def _get_highest_saved_epoch(checkpoint_dir: str) -> int:
+    highest = 0
+    if not os.path.exists(checkpoint_dir):
+        return 0
+    for p in glob.glob(os.path.join(checkpoint_dir, "sft_epoch_*.pt")):
+        match = re.search(r"sft_epoch_(\d+)\.pt", p)
+        if match:
+            highest = max(highest, int(match.group(1)))
+    return highest
 
 
 def sft_train(cfg=None):
@@ -81,8 +88,6 @@ def sft_train(cfg=None):
         max_len=cfg.MAX_LEN,
     ).to(device)
 
-    _load_pretrained(model, cfg.PRETRAINED_CHECKPOINT, device)
-
     if cfg.FREEZE_EMBEDDINGS:
         for p in model.token_embedding.parameters():
             p.requires_grad = False
@@ -101,39 +106,72 @@ def sft_train(cfg=None):
         weight_decay=0.01,
     )
 
-    total_steps  = len(train_loader) * cfg.EPOCHS
-    warmup_steps = min(cfg.WARMUP_STEPS, total_steps // 10)
-    scheduler    = get_cosine_schedule_with_warmup(
-        optimizer,
-        num_warmup_steps=warmup_steps,
-        num_training_steps=total_steps,
-    )
-    print(f"Scheduler: {warmup_steps} warmup / {total_steps} total steps")
-
     scaler = GradScaler(device=device, enabled=use_amp)
 
     os.makedirs(cfg.CHECKPOINT_DIR, exist_ok=True)
     latest_ckpt     = os.path.join(cfg.CHECKPOINT_DIR, "sft_latest.pt")
     best_ckpt       = os.path.join(cfg.CHECKPOINT_DIR, "sft_best.pt")
-    step_ckpt_paths: list[str] = []
 
     global_step       = 0
     start_epoch       = 0
+    start_batch_idx   = 0
     best_val_loss     = float("inf")
     epochs_no_improve = 0
 
+    highest_saved_epoch = _get_highest_saved_epoch(cfg.CHECKPOINT_DIR)
+    highest_epoch_ckpt  = os.path.join(cfg.CHECKPOINT_DIR, f"sft_epoch_{highest_saved_epoch}.pt") if highest_saved_epoch > 0 else None
+
+    # Determine initial checkpoint source
     if os.path.exists(latest_ckpt):
-        ckpt = torch.load(latest_ckpt, map_location=device, weights_only=True)
-        model.load_state_dict(ckpt["model_state_dict"])
-        optimizer.load_state_dict(ckpt["optimizer_state_dict"])
-        scheduler.load_state_dict(ckpt["scheduler_state_dict"])
-        if "scaler_state_dict" in ckpt:
-            scaler.load_state_dict(ckpt["scaler_state_dict"])
-        global_step       = ckpt["step"]
-        start_epoch       = ckpt["epoch"] + 1
-        best_val_loss     = ckpt.get("best_val_loss", float("inf"))
-        epochs_no_improve = ckpt.get("epochs_no_improve", 0)
-        print(f"Resumed SFT from step {global_step}, epoch {start_epoch}")
+        resume_ckpt_path = latest_ckpt
+    elif highest_epoch_ckpt and os.path.exists(highest_epoch_ckpt):
+        resume_ckpt_path = highest_epoch_ckpt
+    else:
+        resume_ckpt_path = None
+
+    if resume_ckpt_path:
+        try:
+            ckpt = torch.load(resume_ckpt_path, map_location=device, weights_only=False)
+            model.load_state_dict(ckpt["model_state_dict"])
+            if "optimizer_state_dict" in ckpt:
+                try:
+                    optimizer.load_state_dict(ckpt["optimizer_state_dict"])
+                except Exception as e:
+                    print(f"Note: Starting with fresh optimizer for new stage ({e}).")
+            if "scaler_state_dict" in ckpt and ckpt["scaler_state_dict"]:
+                try:
+                    scaler.load_state_dict(ckpt["scaler_state_dict"])
+                except Exception:
+                    pass
+
+            global_step       = ckpt.get("step", 0)
+            start_epoch       = ckpt.get("epoch", highest_saved_epoch)
+            start_batch_idx   = ckpt.get("batch_idx", 0)
+            if ckpt.get("epoch_completed", False):
+                start_epoch += 1
+                start_batch_idx = 0
+            best_val_loss     = ckpt.get("best_val_loss", float("inf"))
+            epochs_no_improve = ckpt.get("epochs_no_improve", 0)
+            print(f"✅ Successfully resumed weights from: {resume_ckpt_path} (step {global_step}, next epoch {start_epoch + 1})")
+        except Exception as e:
+            print(f"Warning: Failed to load checkpoint {resume_ckpt_path} ({e}). Using base model.")
+            _load_pretrained(model, cfg.PRETRAINED_CHECKPOINT, device)
+            start_epoch = highest_saved_epoch
+    else:
+        _load_pretrained(model, cfg.PRETRAINED_CHECKPOINT, device)
+        start_epoch = highest_saved_epoch
+
+    target_total_epochs = start_epoch + cfg.EPOCHS
+    remaining_epochs    = target_total_epochs - start_epoch
+    total_training_steps = len(train_loader) * remaining_epochs
+    warmup_steps        = min(cfg.WARMUP_STEPS, max(1, total_training_steps // 10))
+
+    scheduler = get_cosine_schedule_with_warmup(
+        optimizer,
+        num_warmup_steps=warmup_steps,
+        num_training_steps=total_training_steps,
+    )
+    print(f"Training plan: Epoch {start_epoch + 1} -> Epoch {target_total_epochs} ({remaining_epochs} epochs | {total_training_steps} steps | {warmup_steps} warmup)")
 
     if wandb.run is not None:
         wandb.finish()
@@ -146,6 +184,8 @@ def sft_train(cfg=None):
             "pretrained_checkpoint": cfg.PRETRAINED_CHECKPOINT,
             "datasets":              cfg.DATASET_NAMES,
             "epochs":                cfg.EPOCHS,
+            "start_epoch":           start_epoch,
+            "target_total_epochs":   target_total_epochs,
             "batch_size":            cfg.BATCH_SIZE,
             "learning_rate":         cfg.LEARNING_RATE,
             "warmup_steps":          warmup_steps,
@@ -165,13 +205,16 @@ def sft_train(cfg=None):
     )
     wandb.watch(model, log="gradients", log_freq=50)
 
-    for epoch in range(start_epoch, cfg.EPOCHS):
+    for epoch in range(start_epoch, target_total_epochs):
         model.train()
         epoch_loss = 0.0
 
         for batch_idx, (x, y) in enumerate(
-            tqdm.tqdm(train_loader, desc=f"SFT Epoch {epoch + 1}/{cfg.EPOCHS}")
+            tqdm.tqdm(train_loader, desc=f"SFT Epoch {epoch + 1}/{target_total_epochs}")
         ):
+            if epoch == start_epoch and batch_idx < start_batch_idx:
+                continue
+
             x, y = x.to(device), y.to(device)
             optimizer.zero_grad()
 
@@ -201,7 +244,21 @@ def sft_train(cfg=None):
                     "step":           global_step,
                 })
 
-        avg_train_loss = epoch_loss / len(train_loader)
+            if global_step % getattr(cfg, "SAVE_EVERY_STEPS", 50) == 0:
+                torch.save({
+                    "step":                 global_step,
+                    "epoch":                epoch,
+                    "batch_idx":            batch_idx + 1,
+                    "epoch_completed":      False,
+                    "model_state_dict":     model.state_dict(),
+                    "optimizer_state_dict": optimizer.state_dict(),
+                    "scheduler_state_dict": scheduler.state_dict(),
+                    "scaler_state_dict":    scaler.state_dict(),
+                    "best_val_loss":        best_val_loss,
+                    "epochs_no_improve":    epochs_no_improve,
+                }, latest_ckpt)
+
+        avg_train_loss = epoch_loss / max(1, (len(train_loader) - (start_batch_idx if epoch == start_epoch else 0)))
         print(f"Epoch {epoch+1} avg train loss: {avg_train_loss:.4f}")
         wandb.log({"sft/epoch_train_loss": avg_train_loss, "epoch": epoch + 1})
 
@@ -223,6 +280,8 @@ def sft_train(cfg=None):
         ckpt_data = {
             "step":                 global_step,
             "epoch":                epoch,
+            "batch_idx":            0,
+            "epoch_completed":      True,
             "model_state_dict":     model.state_dict(),
             "optimizer_state_dict": optimizer.state_dict(),
             "scheduler_state_dict": scheduler.state_dict(),
@@ -234,7 +293,6 @@ def sft_train(cfg=None):
         epoch_path = os.path.join(cfg.CHECKPOINT_DIR, f"sft_epoch_{epoch+1}.pt")
         torch.save(ckpt_data, epoch_path)
         torch.save(ckpt_data, latest_ckpt)
-        _rotate_checkpoints(step_ckpt_paths, epoch_path, cfg.KEEP_LAST_N_CHECKPOINTS)
         wandb.save(epoch_path)
         print(f"Checkpoint saved: {epoch_path}")
 
