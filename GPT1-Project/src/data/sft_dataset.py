@@ -175,7 +175,8 @@ class SFTDataset(Dataset):
             )
 
             prompt_ids   = tokenizer.encode(prompt)
-            response_ids = tokenizer.encode(output)
+            eos_id       = tokenizer.eos_token_id if tokenizer.eos_token_id is not None else 50256
+            response_ids = tokenizer.encode(output) + [eos_id]
 
             total_len = len(prompt_ids) + len(response_ids)
             # Post-processing: dispose examples exceeding context length limit
