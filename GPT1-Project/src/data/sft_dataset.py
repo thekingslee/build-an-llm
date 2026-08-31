@@ -44,22 +44,60 @@ def load_alpaca_format(source: str, split: str = "train", max_samples: int = Non
             if source.endswith(".jsonl"):
                 for line in f:
                     if line.strip():
-                        raw_rows.append(json.loads(line))
+                        try:
+                            item = json.loads(line)
+                            if isinstance(item, list):
+                                raw_rows.extend(item)
+                            else:
+                                raw_rows.append(item)
+                        except Exception:
+                            continue
             else:
                 data = json.load(f)
-                raw_rows = data if isinstance(data, list) else [data]
+                if isinstance(data, list):
+                    for item in data:
+                        if isinstance(item, list):
+                            raw_rows.extend(item)
+                        else:
+                            raw_rows.append(item)
+                elif isinstance(data, dict):
+                    for key in ["data", "rows", "examples", "train", "samples"]:
+                        if key in data and isinstance(data[key], list):
+                            raw_rows = data[key]
+                            break
+                    else:
+                        raw_rows = [data]
+                else:
+                    raw_rows = []
     else:
         # Load from Hugging Face
-        raw = load_dataset(source, split=split)
-        if max_samples:
+        try:
+            raw = load_dataset(source, split=split)
+        except Exception:
+            raw = load_dataset(source)
+
+        # Handle DatasetDict (when load_dataset returns dict of splits)
+        if hasattr(raw, "keys") and not hasattr(raw, "select"):
+            if split and split in raw:
+                raw = raw[split]
+            elif "train" in raw:
+                raw = raw["train"]
+            else:
+                first_key = list(raw.keys())[0]
+                raw = raw[first_key]
+
+        if max_samples and hasattr(raw, "select"):
             raw = raw.select(range(min(max_samples, len(raw))))
         raw_rows = raw
 
     examples = []
     for row in raw_rows:
-        instruction = (row.get("instruction") or "").strip()
-        output      = (row.get("output") or "").strip()
-        inp         = (row.get("input") or "").strip()
+        if not isinstance(row, dict):
+            continue
+
+        instruction = str(row.get("instruction") or "").strip()
+        output      = str(row.get("output") or "").strip()
+        inp         = str(row.get("input") or "").strip()
 
         if not instruction or not output:
             continue
@@ -83,6 +121,7 @@ def load_sft_datasets(
 ) -> list[dict]:
     """
     Loads and combines one or more datasets by name/alias or Hugging Face ID.
+    Cuts up to max_samples_per_dataset from each specified dataset.
     """
     all_examples = []
 
@@ -101,33 +140,23 @@ def load_sft_datasets(
                 "or pass a direct HuggingFace repo path (e.g. 'org/dataset-name')."
             )
 
-        print(f"\n[SFT Data] Loading '{name}' from: {source}...")
+        print(f"\n[SFT Data] Loading '{name}' from: {source} (max {max_samples_per_dataset or 'all'} samples)...")
         examples = load_alpaca_format(source=source, max_samples=max_samples_per_dataset)
         print(f"[SFT Data] Loaded {len(examples):,} raw examples from '{name}'")
         all_examples.extend(examples)
 
-    print(f"\n[SFT Data] Total combined raw examples: {len(all_examples):,} from {names}")
+    print(f"\n[SFT Data] Total combined raw examples: {len(all_examples):,} across {len(names)} dataset(s)")
     return all_examples
 
 
 class SFTDataset(Dataset):
     def __init__(
         self,
-        examples: list[dict] = None,
-        tokenizer = None,
+        examples: list[dict],
+        tokenizer,
         max_len: int = 512,
         filter_overlength: bool = True,
-        pretokenized_samples: list = None,
-        stats: dict = None,
     ):
-        if pretokenized_samples is not None:
-            self.samples = pretokenized_samples
-            self.num_discarded = stats.get("num_discarded", 0) if stats else 0
-            self.total_prompt_tokens = stats.get("total_prompt_tokens", 0) if stats else 0
-            self.total_response_tokens = stats.get("total_response_tokens", 0) if stats else 0
-            self.total_tokens = stats.get("total_tokens", 0) if stats else 0
-            return
-
         self.samples = []
         self.num_discarded = 0
         self.total_prompt_tokens = 0
@@ -195,45 +224,11 @@ class SFTDataset(Dataset):
         }
 
 
-def _get_cache_filepath(cfg) -> str:
-    names_str = "_".join(sorted(cfg.DATASET_NAMES)).replace("/", "_")
-    max_samples_str = f"_max{cfg.MAX_SAMPLES_PER_DATASET}" if cfg.MAX_SAMPLES_PER_DATASET else ""
-    filename = f"sft_tokenized_{names_str}_len{cfg.MAX_LEN}_val{cfg.VAL_SPLIT}_test{getattr(cfg, 'TEST_SPLIT', 0.0)}{max_samples_str}.pt"
-    return os.path.join(cfg.DATASET_DIR, filename)
-
-
 def load_or_create_sft_splits(tokenizer, cfg):
     """
-    Loads pre-tokenized splits from cache if available, or processes and caches them.
+    Loads raw examples from specified datasets, tokenizes in-memory, and splits into train/val/test.
     Returns (train_ds, val_ds, test_ds, total_raw_count).
     """
-    cache_path = _get_cache_filepath(cfg)
-    use_cache  = getattr(cfg, "USE_CACHE", True)
-
-    if use_cache and os.path.exists(cache_path):
-        print(f"\n[SFT Cache] Loading cached tokenized splits from: {cache_path}")
-        try:
-            cached = torch.load(cache_path, map_location="cpu", weights_only=False)
-            train_ds = SFTDataset(
-                pretokenized_samples=cached["train_samples"],
-                stats=cached["train_stats"],
-            )
-            val_ds = SFTDataset(
-                pretokenized_samples=cached["val_samples"],
-                stats=cached["val_stats"],
-            )
-            test_ds = None
-            if cached.get("test_samples"):
-                test_ds = SFTDataset(
-                    pretokenized_samples=cached["test_samples"],
-                    stats=cached.get("test_stats"),
-                )
-            print(f" Loaded {len(train_ds):,} train / {len(val_ds):,} val" +
-                  (f" / {len(test_ds):,} test" if test_ds else "") + " samples from cache.")
-            return train_ds, val_ds, test_ds, cached.get("raw_sample_count", len(train_ds) + len(val_ds))
-        except Exception as e:
-            print(f"⚠️ Failed to load SFT cache ({e}), reprocessing from raw data...")
-
     # Load from raw Hugging Face datasets / local files
     all_examples = load_sft_datasets(
         names=cfg.DATASET_NAMES,
@@ -255,35 +250,13 @@ def load_or_create_sft_splits(tokenizer, cfg):
 
     filter_overlength = getattr(cfg, "FILTER_OVERLENGTH", True)
 
-    print("\n[SFT Data] Tokenizing and formatting splits...")
+    print("\n[SFT Data] Tokenizing and formatting splits in memory...")
     train_ds = SFTDataset(train_examples, tokenizer, cfg.MAX_LEN, filter_overlength=filter_overlength)
     val_ds   = SFTDataset(val_examples,   tokenizer, cfg.MAX_LEN, filter_overlength=filter_overlength)
     test_ds  = (
         SFTDataset(test_examples, tokenizer, cfg.MAX_LEN, filter_overlength=filter_overlength)
         if test_size > 0 else None
     )
-
-    # Cache tokenized splits
-    try:
-        os.makedirs(cfg.DATASET_DIR, exist_ok=True)
-        torch.save({
-            "train_samples": train_ds.samples,
-            "val_samples": val_ds.samples,
-            "test_samples": test_ds.samples if test_ds else [],
-            "train_stats": train_ds.get_stats(),
-            "val_stats": val_ds.get_stats(),
-            "test_stats": test_ds.get_stats() if test_ds else {},
-            "raw_sample_count": len(all_examples),
-            "config": {
-                "datasets": cfg.DATASET_NAMES,
-                "max_len": cfg.MAX_LEN,
-                "val_split": cfg.VAL_SPLIT,
-                "test_split": test_ratio,
-            },
-        }, cache_path)
-        print(f" Saved tokenized SFT splits to cache: {cache_path}")
-    except Exception as e:
-        print(f"⚠️ Could not save SFT cache: {e}")
 
     return train_ds, val_ds, test_ds, len(all_examples)
 

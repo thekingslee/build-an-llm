@@ -19,20 +19,18 @@ class SFTConfig:
 
     DATASET_NAMES: list = field(
         default_factory=lambda: [
+            "sentiment",
             "extraction",
             "formatting",
             "conversation",
-            "sentiment",
             "summarization",
         ]
     )
     LOCAL_DATA_PATH: str = field(default_factory=lambda: _SFT_DATA_PATH)
-    MAX_SAMPLES_PER_DATASET: int | None = None
+    MAX_SAMPLES_PER_DATASET: int | None = 10_000  # Number of samples to slice per dataset source (e.g. 10k each)
     VAL_SPLIT: float = 0.1
     TEST_SPLIT: float = 0.05
     FILTER_OVERLENGTH: bool = True  # Discard examples exceeding MAX_LEN instead of truncating
-    USE_CACHE: bool = True  # Cache tokenized splits to disk just like pretraining
-    DATASET_DIR: str = field(default_factory=lambda: _DATASET_DIR)
 
     BATCH_SIZE: int = 128 if _IS_RUNPOD else (16 if _IS_COLAB else 4)
     EPOCHS: int = 3
