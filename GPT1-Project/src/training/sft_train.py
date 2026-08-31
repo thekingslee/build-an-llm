@@ -9,8 +9,7 @@ from transformers import get_cosine_schedule_with_warmup, GPT2Tokenizer
 from datetime import datetime
 
 from src.models.gpt1 import GPT1
-from src.data.sft_dataset import prepare_sft_dataloader
-from src.data.datasets import load_datasets
+from src.data.sft_dataset import load_or_create_sft_splits, create_sft_dataloader
 from src.utils.sft_config import SFT_CONFIG
 
 
@@ -47,21 +46,32 @@ def sft_train(cfg=None):
     tokenizer           = GPT2Tokenizer.from_pretrained("gpt2")
     tokenizer.pad_token = tokenizer.eos_token
 
-    all_examples = load_datasets(
-        names=cfg.DATASET_NAMES,
-        local_path=cfg.LOCAL_DATA_PATH,
-        max_samples_per_dataset=cfg.MAX_SAMPLES_PER_DATASET,
-    )
-    random.Random(42).shuffle(all_examples)
+    train_ds, val_ds, test_ds, total_raw_count = load_or_create_sft_splits(tokenizer, cfg)
 
-    split_idx      = int(len(all_examples) * (1 - cfg.VAL_SPLIT))
-    train_examples = all_examples[:split_idx]
-    val_examples   = all_examples[split_idx:]
-    print(f"SFT split: {len(train_examples)} train / {len(val_examples)} val")
+    train_loader = create_sft_dataloader(train_ds, cfg, is_train=True)
+    val_loader   = create_sft_dataloader(val_ds,   cfg, is_train=False)
+    test_loader  = create_sft_dataloader(test_ds,  cfg, is_train=False) if test_ds else None
 
-    train_loader = prepare_sft_dataloader(train_examples, tokenizer, cfg, "train")
-    val_loader   = prepare_sft_dataloader(val_examples,   tokenizer, cfg, "val")
-    print(f"Batches — train: {len(train_loader)}, val: {len(val_loader)}")
+    total_tokens_cum  = train_ds.total_tokens + val_ds.total_tokens + (test_ds.total_tokens if test_ds else 0)
+    total_resp_tokens = train_ds.total_response_tokens + val_ds.total_response_tokens + (test_ds.total_response_tokens if test_ds else 0)
+    total_discarded   = train_ds.num_discarded + val_ds.num_discarded + (test_ds.num_discarded if test_ds else 0)
+    total_kept        = len(train_ds) + len(val_ds) + (len(test_ds) if test_ds else 0)
+
+    print("\n" + "=" * 65)
+    print("SFT DATASET & TOKEN SUMMARY")
+    print("=" * 65)
+    print(f"Total Raw Samples Loaded:       {total_raw_count:,}")
+    print(f"Discarded (> {cfg.MAX_LEN} context length): {total_discarded:,} ({total_discarded / max(1, total_raw_count) * 100:.2f}%)")
+    print(f"Valid Samples Kept:             {total_kept:,}")
+    print("-" * 65)
+    print(f"Train Split:  {len(train_ds):>7,} samples | {train_ds.total_tokens:>10,} tokens ({train_ds.total_response_tokens:>10,} target tokens)")
+    print(f"Val Split:    {len(val_ds):>7,} samples | {val_ds.total_tokens:>10,} tokens ({val_ds.total_response_tokens:>10,} target tokens)")
+    if test_ds:
+        print(f"Test Split:   {len(test_ds):>7,} samples | {test_ds.total_tokens:>10,} tokens ({test_ds.total_response_tokens:>10,} target tokens)")
+    print("-" * 65)
+    print(f"Cumulative Total Tokens:        {total_tokens_cum:,} tokens")
+    print(f"Cumulative Target/Loss Tokens*: {total_resp_tokens:,} tokens")
+    print("=" * 65 + "\n")
 
     model = GPT1(
         vocab_size=tokenizer.vocab_size,
@@ -134,13 +144,23 @@ def sft_train(cfg=None):
         name=f"sft_{datetime.now().strftime('%Y%m%d_%H%M%S')}",
         config={
             "pretrained_checkpoint": cfg.PRETRAINED_CHECKPOINT,
-            "sft_data":              cfg.SFT_DATA_PATH,
+            "datasets":              cfg.DATASET_NAMES,
             "epochs":                cfg.EPOCHS,
             "batch_size":            cfg.BATCH_SIZE,
             "learning_rate":         cfg.LEARNING_RATE,
             "warmup_steps":          warmup_steps,
             "freeze_embeddings":     cfg.FREEZE_EMBEDDINGS,
             "use_amp":               use_amp,
+            "max_len":               cfg.MAX_LEN,
+            "train_samples":         len(train_ds),
+            "val_samples":           len(val_ds),
+            "test_samples":          len(test_ds) if test_ds else 0,
+            "train_tokens":          train_ds.total_tokens,
+            "val_tokens":            val_ds.total_tokens,
+            "test_tokens":           test_ds.total_tokens if test_ds else 0,
+            "cumulative_tokens":     total_tokens_cum,
+            "cumulative_loss_tokens": total_resp_tokens,
+            "discarded_samples":     total_discarded,
         },
     )
     wandb.watch(model, log="gradients", log_freq=50)
@@ -221,8 +241,10 @@ def sft_train(cfg=None):
         if avg_val_loss < best_val_loss:
             best_val_loss     = avg_val_loss
             epochs_no_improve = 0
+            ckpt_data["best_val_loss"] = best_val_loss
             torch.save(ckpt_data, best_ckpt)
-            print(f"   New best SFT model (val_loss={best_val_loss:.4f})")
+            wandb.save(best_ckpt)
+            print(f"   ✅ New best SFT model saved: {best_ckpt} (val_loss={best_val_loss:.4f})")
         else:
             epochs_no_improve += 1
             print(

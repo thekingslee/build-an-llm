@@ -5,7 +5,7 @@ import argparse
 project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, project_root)
 
-from src.data.datasets import available_datasets
+from src.data.sft_dataset import available_datasets
 from src.utils.sft_config import SFT_CONFIG
 from src.training.sft_train import sft_train
 
@@ -24,10 +24,10 @@ def parse_args():
             "One or more dataset names to load and combine at training time.\n"
             f"Available: {available_datasets()}\n"
             "Examples:\n"
-            "  --datasets alpaca\n"
-            "  --datasets alpaca dolly\n"
-            "  --datasets local\n"
-            "  --datasets alpaca dolly local"
+            "  --datasets extraction formatting conversation\n"
+            "  --datasets extraction\n"
+            "  --datasets local --local-data-path data/my_sft.jsonl\n"
+            "  --datasets anabury/extraction-ner-sft-100k"
         ),
     )
     parser.add_argument(
