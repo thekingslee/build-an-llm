@@ -22,7 +22,7 @@ class SFTConfig:
             "sentiment",
             "extraction",
             "formatting",
-            # "conversation",
+            "conversation",
             # "summarization",
         ]
     )
